@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+# Same checks CI runs. Use this before you consider a milestone done.
+set -euo pipefail
+cd "$(dirname "$0")/.."
+
+uv run ruff check .
+uv run ruff format --check .
+uv run mypy
+uv run tach check
+uv run tach check-external
+uv run pytest
+
+(
+    cd frontend
+    corepack pnpm exec tsc --noEmit
+    corepack pnpm exec oxlint
+    corepack pnpm exec oxfmt --check .
+    corepack pnpm test
+)

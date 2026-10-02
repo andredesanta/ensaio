@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+# Postgres in Docker, Django and the Vite console on the host.
+set -euo pipefail
+cd "$(dirname "$0")/.."
+
+docker compose up -d
+
+echo "Waiting for Postgres..."
+for _ in $(seq 1 30); do
+    if docker compose exec -T db pg_isready -U ensaio -d ensaio >/dev/null 2>&1; then
+        break
+    fi
+    sleep 1
+done
+docker compose exec -T db pg_isready -U ensaio -d ensaio
+
+uv run python manage.py migrate
+
+cleanup() {
+    if [[ -n "${DJANGO_PID:-}" ]]; then
+        kill "$DJANGO_PID" 2>/dev/null || true
+    fi
+    if [[ -n "${VITE_PID:-}" ]]; then
+        kill "$VITE_PID" 2>/dev/null || true
+    fi
+}
+trap cleanup EXIT INT TERM
+
+uv run python manage.py runserver 8000 &
+DJANGO_PID=$!
+
+(cd frontend && corepack pnpm dev) &
+VITE_PID=$!
+
+echo "API:     http://127.0.0.1:8000/healthz"
+echo "Console: http://127.0.0.1:5173"
+wait
