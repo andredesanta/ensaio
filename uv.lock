@@ -248,6 +248,7 @@ dependencies = [
 dev = [
     { name = "django-stubs" },
     { name = "djangorestframework-stubs" },
+    { name = "hypothesis" },
     { name = "mypy" },
     { name = "pytest" },
     { name = "pytest-django" },
@@ -271,6 +272,7 @@ requires-dist = [
 dev = [
     { name = "django-stubs", specifier = "~=5.2.0" },
     { name = "djangorestframework-stubs", specifier = "~=3.16.0" },
+    { name = "hypothesis", specifier = "~=6.140.0" },
     { name = "mypy", specifier = "~=2.1.0" },
     { name = "pytest", specifier = "~=8.4.2" },
     { name = "pytest-django", specifier = "~=4.14.0" },
@@ -305,6 +307,19 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/6e/2d/6f6e649818da44d4499604802c89329b8d9799687a124e3a5e467a643336/gitpython-3.2.0.tar.gz", hash = "sha256:fb92310af6844d96adc95ca066ed2e617c00e1dbd146a326626c81e72e18cc2e", size = 238091, upload-time = "2026-09-30T09:10:32.65Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/fa/48/f36d233ce749d1bb880cb5e6f8bb171dc2effabc7435c31da604d831b3ec/gitpython-3.2.0-py3-none-any.whl", hash = "sha256:bd70c5ec05cd2b797423e7eb312147d2458d3cca92085888fba2213f85905537", size = 228537, upload-time = "2026-09-30T09:10:31.159Z" },
+]
+
+[[package]]
+name = "hypothesis"
+version = "6.140.4"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "attrs" },
+    { name = "sortedcontainers" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/c0/66/cfac5a29aea2c5e20136ce0d67083e5bc4c2c940cc4491d47b081141fabe/hypothesis-6.140.4.tar.gz", hash = "sha256:a4f61b0c1977a0bc1a28b7fe979f7c045092a57760e58083c956dfd538ff754e", size = 466914, upload-time = "2025-10-14T17:06:38.034Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/50/cb/55fdc97fb38d9ff011b56b82fbe8d8f81db5219623f24086d45f7b63d78b/hypothesis-6.140.4-py3-none-any.whl", hash = "sha256:b05eee9ba0d69f479657a0952679d2ff8967ea5e05ca7bddc86ddb60c49291b2", size = 534523, upload-time = "2025-10-14T17:06:34.317Z" },
 ]
 
 [[package]]
@@ -837,6 +852,15 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/1f/ea/49c993d6dfdd7338c9b1000a0f36817ed7ec84577ae2e52f890d1a4ff909/smmap-5.0.3.tar.gz", hash = "sha256:4d9debb8b99007ae47165abc08670bd74cb74b5227dda7f643eccc4e9eb5642c", size = 22506, upload-time = "2026-03-09T03:43:26.1Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/c1/d4/59e74daffcb57a07668852eeeb6035af9f32cbfd7a1d2511f17d2fe6a738/smmap-5.0.3-py3-none-any.whl", hash = "sha256:c106e05d5a61449cf6ba9a1e650227ecfb141590d2a98412103ff35d89fc7b2f", size = 24390, upload-time = "2026-03-09T03:43:24.361Z" },
+]
+
+[[package]]
+name = "sortedcontainers"
+version = "2.4.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/e8/c4/ba2f8066cceb6f23394729afe52f3bf7adec04bf9ed2c820b39e19299111/sortedcontainers-2.4.0.tar.gz", hash = "sha256:25caa5a06cc30b6b83d11423433f65d1f9d76c4c6a0c90e3379eaa43b9bfdb88", size = 30594, upload-time = "2021-05-16T22:03:42.897Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/32/46/9cb0e58b2deb7f82b84065f37f3bffeb12413f947f9388e4cac22c4621ce/sortedcontainers-2.4.0-py2.py3-none-any.whl", hash = "sha256:a163dcaede0f1c021485e957a39245190e74249897e2ae4b2aa38595db237ee0", size = 29575, upload-time = "2021-05-16T22:03:41.177Z" },
 ]
 
 [[package]]

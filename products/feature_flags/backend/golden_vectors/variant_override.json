@@ -1,0 +1,45 @@
+{
+    "name": "a condition variant override bypasses variant hashing",
+    "flag": {
+        "key": "override-flag",
+        "active": true,
+        "version": 1,
+        "filters": {
+            "groups": [
+                {
+                    "properties": [],
+                    "rollout_percentage": 100,
+                    "variant": "test"
+                }
+            ],
+            "multivariate": {
+                "variants": [
+                    {
+                        "key": "control",
+                        "rollout_percentage": 100
+                    },
+                    {
+                        "key": "test",
+                        "rollout_percentage": 0
+                    }
+                ]
+            },
+            "payloads": {
+                "test": {
+                    "forced": true
+                }
+            }
+        }
+    },
+    "distinct_id": "anyone",
+    "properties": {},
+    "expected": {
+        "enabled": true,
+        "variant": "test",
+        "payload": {
+            "forced": true
+        },
+        "reason": "condition_match",
+        "condition_index": 0
+    }
+}

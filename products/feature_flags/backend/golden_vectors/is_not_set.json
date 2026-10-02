@@ -1,0 +1,33 @@
+{
+    "name": "is_not_set matches only an absent key",
+    "flag": {
+        "key": "property-is-not-set",
+        "active": true,
+        "version": 1,
+        "filters": {
+            "groups": [
+                {
+                    "properties": [
+                        {
+                            "key": "company_id",
+                            "type": "person",
+                            "operator": "is_not_set",
+                            "value": null
+                        }
+                    ],
+                    "rollout_percentage": 100,
+                    "variant": null
+                }
+            ]
+        }
+    },
+    "distinct_id": "customer-5",
+    "properties": {},
+    "expected": {
+        "enabled": true,
+        "variant": null,
+        "payload": null,
+        "reason": "condition_match",
+        "condition_index": 0
+    }
+}

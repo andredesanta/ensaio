@@ -1,0 +1,46 @@
+{
+    "name": "property filters inside one condition are ANDed",
+    "flag": {
+        "key": "and-properties",
+        "active": true,
+        "version": 1,
+        "filters": {
+            "groups": [
+                {
+                    "properties": [
+                        {
+                            "key": "country",
+                            "type": "person",
+                            "operator": "exact",
+                            "value": [
+                                "BR"
+                            ]
+                        },
+                        {
+                            "key": "plan",
+                            "type": "person",
+                            "operator": "exact",
+                            "value": [
+                                "pro"
+                            ]
+                        }
+                    ],
+                    "rollout_percentage": 100,
+                    "variant": null
+                }
+            ]
+        }
+    },
+    "distinct_id": "customer-2",
+    "properties": {
+        "country": "BR",
+        "plan": "free"
+    },
+    "expected": {
+        "enabled": false,
+        "variant": null,
+        "payload": null,
+        "reason": "no_condition_match",
+        "condition_index": null
+    }
+}

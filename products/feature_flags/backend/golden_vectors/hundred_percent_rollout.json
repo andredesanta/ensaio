@@ -1,0 +1,26 @@
+{
+    "name": "one hundred percent rollout includes without hashing",
+    "flag": {
+        "key": "hundred-rollout",
+        "active": true,
+        "version": 1,
+        "filters": {
+            "groups": [
+                {
+                    "properties": [],
+                    "rollout_percentage": 100,
+                    "variant": null
+                }
+            ]
+        }
+    },
+    "distinct_id": "anyone",
+    "properties": {},
+    "expected": {
+        "enabled": true,
+        "variant": null,
+        "payload": null,
+        "reason": "condition_match",
+        "condition_index": 0
+    }
+}

@@ -1,0 +1,59 @@
+{
+    "name": "matching property and rollout select control",
+    "flag": {
+        "key": "new-checkout",
+        "active": true,
+        "version": 3,
+        "filters": {
+            "groups": [
+                {
+                    "properties": [
+                        {
+                            "key": "country",
+                            "type": "person",
+                            "operator": "exact",
+                            "value": [
+                                "BR"
+                            ]
+                        }
+                    ],
+                    "rollout_percentage": 75,
+                    "variant": null
+                }
+            ],
+            "multivariate": {
+                "variants": [
+                    {
+                        "key": "control",
+                        "rollout_percentage": 50
+                    },
+                    {
+                        "key": "test",
+                        "rollout_percentage": 50
+                    }
+                ]
+            },
+            "payloads": {
+                "control": {
+                    "layout": "v1"
+                },
+                "test": {
+                    "layout": "v2"
+                }
+            }
+        }
+    },
+    "distinct_id": "u_42",
+    "properties": {
+        "country": "BR"
+    },
+    "expected": {
+        "enabled": true,
+        "variant": "control",
+        "payload": {
+            "layout": "v1"
+        },
+        "reason": "condition_match",
+        "condition_index": 0
+    }
+}

@@ -1,0 +1,37 @@
+{
+    "name": "matching properties can still be outside rollout",
+    "flag": {
+        "key": "new-checkout",
+        "active": true,
+        "version": 3,
+        "filters": {
+            "groups": [
+                {
+                    "properties": [
+                        {
+                            "key": "country",
+                            "type": "person",
+                            "operator": "exact",
+                            "value": [
+                                "BR"
+                            ]
+                        }
+                    ],
+                    "rollout_percentage": 75,
+                    "variant": null
+                }
+            ]
+        }
+    },
+    "distinct_id": "u_314",
+    "properties": {
+        "country": "BR"
+    },
+    "expected": {
+        "enabled": false,
+        "variant": null,
+        "payload": null,
+        "reason": "out_of_rollout_bound",
+        "condition_index": null
+    }
+}

@@ -1,0 +1,38 @@
+{
+    "name": "a hash equal to a cumulative edge belongs to the next variant",
+    "flag": {
+        "key": "boundary-flag",
+        "active": true,
+        "version": 1,
+        "filters": {
+            "groups": [
+                {
+                    "properties": [],
+                    "rollout_percentage": 100,
+                    "variant": null
+                }
+            ],
+            "multivariate": {
+                "variants": [
+                    {
+                        "key": "control",
+                        "rollout_percentage": 34.75411144795393
+                    },
+                    {
+                        "key": "test",
+                        "rollout_percentage": 65.24588855204607
+                    }
+                ]
+            }
+        }
+    },
+    "distinct_id": "boundary-user",
+    "properties": {},
+    "expected": {
+        "enabled": true,
+        "variant": "test",
+        "payload": null,
+        "reason": "condition_match",
+        "condition_index": 0
+    }
+}

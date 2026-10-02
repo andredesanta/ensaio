@@ -1,0 +1,52 @@
+{
+    "name": "conditions are ORed in list order",
+    "flag": {
+        "key": "or-conditions",
+        "active": true,
+        "version": 1,
+        "filters": {
+            "groups": [
+                {
+                    "properties": [
+                        {
+                            "key": "country",
+                            "type": "person",
+                            "operator": "exact",
+                            "value": [
+                                "US"
+                            ]
+                        }
+                    ],
+                    "rollout_percentage": 100,
+                    "variant": null
+                },
+                {
+                    "properties": [
+                        {
+                            "key": "plan",
+                            "type": "person",
+                            "operator": "exact",
+                            "value": [
+                                "pro"
+                            ]
+                        }
+                    ],
+                    "rollout_percentage": 100,
+                    "variant": null
+                }
+            ]
+        }
+    },
+    "distinct_id": "customer-1",
+    "properties": {
+        "country": "BR",
+        "plan": "pro"
+    },
+    "expected": {
+        "enabled": true,
+        "variant": null,
+        "payload": null,
+        "reason": "condition_match",
+        "condition_index": 1
+    }
+}

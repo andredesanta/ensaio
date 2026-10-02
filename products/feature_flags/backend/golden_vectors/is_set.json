@@ -1,0 +1,35 @@
+{
+    "name": "is_set checks key presence even when the value is null",
+    "flag": {
+        "key": "property-is-set",
+        "active": true,
+        "version": 1,
+        "filters": {
+            "groups": [
+                {
+                    "properties": [
+                        {
+                            "key": "company_id",
+                            "type": "person",
+                            "operator": "is_set",
+                            "value": null
+                        }
+                    ],
+                    "rollout_percentage": 100,
+                    "variant": null
+                }
+            ]
+        }
+    },
+    "distinct_id": "customer-4",
+    "properties": {
+        "company_id": null
+    },
+    "expected": {
+        "enabled": true,
+        "variant": null,
+        "payload": null,
+        "reason": "condition_match",
+        "condition_index": 0
+    }
+}

@@ -1,7 +1,43 @@
-"""Pure feature-flag evaluation.
+"""Pure, deterministic feature-flag evaluation with PostHog-compatible bucketing."""
 
-This package is the piece a server-side consumer will import and run in-process.
-It must not import Django, talk to the network, or read the clock. Hashing and
-``evaluate()`` land in M1. The package exists in M0 so the boundary is real
-before any logic is written.
-"""
+from ensaio_kernel.evaluate import evaluate
+from ensaio_kernel.hashing import LONG_SCALE, calculate_hash, hash_position, is_in_rollout, select_variant
+from ensaio_kernel.types import (
+    ConditionTrace,
+    EvaluationReason,
+    EvaluationResult,
+    FlagActiveTrace,
+    FlagDefinition,
+    JSONScalar,
+    JSONValue,
+    PropertyOperator,
+    PropertyTrace,
+    RolloutTrace,
+    TraceStep,
+    Variant,
+    VariantHashTrace,
+    VariantOverrideTrace,
+)
+
+__all__ = [
+    "LONG_SCALE",
+    "ConditionTrace",
+    "EvaluationReason",
+    "EvaluationResult",
+    "FlagActiveTrace",
+    "FlagDefinition",
+    "JSONScalar",
+    "JSONValue",
+    "PropertyOperator",
+    "PropertyTrace",
+    "RolloutTrace",
+    "TraceStep",
+    "Variant",
+    "VariantHashTrace",
+    "VariantOverrideTrace",
+    "calculate_hash",
+    "evaluate",
+    "hash_position",
+    "is_in_rollout",
+    "select_variant",
+]

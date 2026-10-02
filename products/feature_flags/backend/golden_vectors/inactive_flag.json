@@ -1,0 +1,26 @@
+{
+    "name": "inactive flag is disabled before conditions",
+    "flag": {
+        "key": "inactive-flag",
+        "active": false,
+        "version": 1,
+        "filters": {
+            "groups": [
+                {
+                    "properties": [],
+                    "rollout_percentage": 100,
+                    "variant": null
+                }
+            ]
+        }
+    },
+    "distinct_id": "anyone",
+    "properties": {},
+    "expected": {
+        "enabled": false,
+        "variant": null,
+        "payload": null,
+        "reason": "flag_disabled",
+        "condition_index": null
+    }
+}

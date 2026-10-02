@@ -1,0 +1,26 @@
+{
+    "name": "zero percent rollout excludes a normal nonzero hash",
+    "flag": {
+        "key": "zero-rollout",
+        "active": true,
+        "version": 1,
+        "filters": {
+            "groups": [
+                {
+                    "properties": [],
+                    "rollout_percentage": 0,
+                    "variant": null
+                }
+            ]
+        }
+    },
+    "distinct_id": "anyone",
+    "properties": {},
+    "expected": {
+        "enabled": false,
+        "variant": null,
+        "payload": null,
+        "reason": "out_of_rollout_bound",
+        "condition_index": null
+    }
+}

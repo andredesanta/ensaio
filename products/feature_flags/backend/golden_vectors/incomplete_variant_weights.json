@@ -1,0 +1,34 @@
+{
+    "name": "variant weights below one hundred leave a remainder unassigned",
+    "flag": {
+        "key": "underweight-flag",
+        "active": true,
+        "version": 1,
+        "filters": {
+            "groups": [
+                {
+                    "properties": [],
+                    "rollout_percentage": 100,
+                    "variant": null
+                }
+            ],
+            "multivariate": {
+                "variants": [
+                    {
+                        "key": "control",
+                        "rollout_percentage": 40
+                    }
+                ]
+            }
+        }
+    },
+    "distinct_id": "underweight-user",
+    "properties": {},
+    "expected": {
+        "enabled": true,
+        "variant": null,
+        "payload": null,
+        "reason": "condition_match",
+        "condition_index": 0
+    }
+}
