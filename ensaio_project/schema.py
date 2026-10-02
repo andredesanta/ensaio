@@ -4,10 +4,10 @@ from rest_framework.permissions import AllowAny
 
 
 class SchemaView(SpectacularAPIView):
-    """OpenAPI document the console's types will be generated from (M3, via orval).
+    """OpenAPI document the console's types will be generated from (via orval).
 
-    Public on purpose while the document lists no resources. The management API
-    itself stays authenticated: this view does not serve flag data.
+    Public on purpose: it describes API shapes but serves no flag data. The
+    management API operations it documents remain session-authenticated.
     """
 
     authentication_classes: list[type[BaseAuthentication]] = []
