@@ -1,0 +1,933 @@
+{
+    "openapi": "3.0.3",
+    "info": {
+        "title": "Ensaio",
+        "version": "0.0.0",
+        "description": "Feature flag management API. Types for the console are generated from this schema."
+    },
+    "paths": {
+        "/api/projects/{team_id}/feature_flags/": {
+            "get": {
+                "operationId": "projects_feature_flags_list",
+                "description": "Make the project id in the URL an unavoidable queryset boundary.",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "team_id",
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "projects"
+                ],
+                "security": [
+                    {
+                        "cookieAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/FeatureFlag"
+                                    }
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                }
+            },
+            "post": {
+                "operationId": "projects_feature_flags_create",
+                "description": "Make the project id in the URL an unavoidable queryset boundary.",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "team_id",
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "projects"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/FeatureFlag"
+                            }
+                        },
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/FeatureFlag"
+                            }
+                        },
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/FeatureFlag"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "security": [
+                    {
+                        "cookieAuth": []
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/FeatureFlag"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/api/projects/{team_id}/feature_flags/{id}/": {
+            "get": {
+                "operationId": "projects_feature_flags_retrieve",
+                "description": "Make the project id in the URL an unavoidable queryset boundary.",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "description": "A unique integer value identifying this feature flag.",
+                        "required": true
+                    },
+                    {
+                        "in": "path",
+                        "name": "team_id",
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "projects"
+                ],
+                "security": [
+                    {
+                        "cookieAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/FeatureFlag"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                }
+            },
+            "put": {
+                "operationId": "projects_feature_flags_update",
+                "description": "Make the project id in the URL an unavoidable queryset boundary.",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "description": "A unique integer value identifying this feature flag.",
+                        "required": true
+                    },
+                    {
+                        "in": "path",
+                        "name": "team_id",
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "projects"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/FeatureFlag"
+                            }
+                        },
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/FeatureFlag"
+                            }
+                        },
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/FeatureFlag"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "security": [
+                    {
+                        "cookieAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/FeatureFlag"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                }
+            },
+            "patch": {
+                "operationId": "projects_feature_flags_partial_update",
+                "description": "Make the project id in the URL an unavoidable queryset boundary.",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "description": "A unique integer value identifying this feature flag.",
+                        "required": true
+                    },
+                    {
+                        "in": "path",
+                        "name": "team_id",
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "projects"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PatchedFeatureFlag"
+                            }
+                        },
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PatchedFeatureFlag"
+                            }
+                        },
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PatchedFeatureFlag"
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "cookieAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/FeatureFlag"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                }
+            },
+            "delete": {
+                "operationId": "projects_feature_flags_destroy",
+                "description": "Make the project id in the URL an unavoidable queryset boundary.",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "description": "A unique integer value identifying this feature flag.",
+                        "required": true
+                    },
+                    {
+                        "in": "path",
+                        "name": "team_id",
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "projects"
+                ],
+                "security": [
+                    {
+                        "cookieAuth": []
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No response body"
+                    }
+                }
+            }
+        },
+        "/api/projects/{team_id}/feature_flags/{id}/trace/": {
+            "post": {
+                "operationId": "projects_feature_flags_trace_create",
+                "description": "Make the project id in the URL an unavoidable queryset boundary.",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "description": "A unique integer value identifying this feature flag.",
+                        "required": true
+                    },
+                    {
+                        "in": "path",
+                        "name": "team_id",
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "projects"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/TraceRequest"
+                            }
+                        },
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/TraceRequest"
+                            }
+                        },
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/TraceRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "security": [
+                    {
+                        "cookieAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/EvaluationResult"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/api/schema/": {
+            "get": {
+                "operationId": "schema_retrieve",
+                "description": "OpenAPI document the console's types will be generated from (via orval).\n\nPublic on purpose: it describes API shapes but serves no flag data. The\nmanagement API operations it documents remain session-authenticated.",
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "format",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "json",
+                                "yaml"
+                            ]
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "lang",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "af",
+                                "ar",
+                                "ar-dz",
+                                "ast",
+                                "az",
+                                "be",
+                                "bg",
+                                "bn",
+                                "br",
+                                "bs",
+                                "ca",
+                                "ckb",
+                                "cs",
+                                "cy",
+                                "da",
+                                "de",
+                                "dsb",
+                                "el",
+                                "en",
+                                "en-au",
+                                "en-gb",
+                                "eo",
+                                "es",
+                                "es-ar",
+                                "es-co",
+                                "es-mx",
+                                "es-ni",
+                                "es-ve",
+                                "et",
+                                "eu",
+                                "fa",
+                                "fi",
+                                "fr",
+                                "fy",
+                                "ga",
+                                "gd",
+                                "gl",
+                                "he",
+                                "hi",
+                                "hr",
+                                "hsb",
+                                "hu",
+                                "hy",
+                                "ia",
+                                "id",
+                                "ig",
+                                "io",
+                                "is",
+                                "it",
+                                "ja",
+                                "ka",
+                                "kab",
+                                "kk",
+                                "km",
+                                "kn",
+                                "ko",
+                                "ky",
+                                "lb",
+                                "lt",
+                                "lv",
+                                "mk",
+                                "ml",
+                                "mn",
+                                "mr",
+                                "ms",
+                                "my",
+                                "nb",
+                                "ne",
+                                "nl",
+                                "nn",
+                                "os",
+                                "pa",
+                                "pl",
+                                "pt",
+                                "pt-br",
+                                "ro",
+                                "ru",
+                                "sk",
+                                "sl",
+                                "sq",
+                                "sr",
+                                "sr-latn",
+                                "sv",
+                                "sw",
+                                "ta",
+                                "te",
+                                "tg",
+                                "th",
+                                "tk",
+                                "tr",
+                                "tt",
+                                "udm",
+                                "ug",
+                                "uk",
+                                "ur",
+                                "uz",
+                                "vi",
+                                "zh-hans",
+                                "zh-hant"
+                            ]
+                        }
+                    }
+                ],
+                "tags": [
+                    "schema"
+                ],
+                "security": [
+                    {}
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/vnd.oai.openapi": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {}
+                                }
+                            },
+                            "application/yaml": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {}
+                                }
+                            },
+                            "application/vnd.oai.openapi+json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {}
+                                }
+                            },
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {}
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "Condition": {
+                "type": "object",
+                "description": "Reject misspelled configuration instead of silently dropping it.",
+                "properties": {
+                    "properties": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/PropertyFilter"
+                        }
+                    },
+                    "rollout_percentage": {
+                        "type": "number",
+                        "format": "double",
+                        "maximum": 100,
+                        "minimum": 0,
+                        "default": 100.0
+                    },
+                    "variant": {
+                        "type": "string",
+                        "nullable": true
+                    }
+                },
+                "required": [
+                    "properties"
+                ]
+            },
+            "EvaluationResult": {
+                "type": "object",
+                "properties": {
+                    "enabled": {
+                        "type": "boolean"
+                    },
+                    "variant": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "payload": {
+                        "nullable": true
+                    },
+                    "reason": {
+                        "$ref": "#/components/schemas/ReasonEnum"
+                    },
+                    "condition_index": {
+                        "type": "integer",
+                        "nullable": true
+                    },
+                    "trace": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/TraceStep"
+                        }
+                    }
+                },
+                "required": [
+                    "condition_index",
+                    "enabled",
+                    "payload",
+                    "reason",
+                    "trace",
+                    "variant"
+                ]
+            },
+            "FeatureFlag": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "readOnly": true
+                    },
+                    "team_id": {
+                        "type": "integer",
+                        "readOnly": true
+                    },
+                    "key": {
+                        "type": "string",
+                        "maxLength": 400,
+                        "pattern": "^[-a-zA-Z0-9_]+$"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "active": {
+                        "type": "boolean"
+                    },
+                    "deleted": {
+                        "type": "boolean",
+                        "readOnly": true
+                    },
+                    "version": {
+                        "type": "integer",
+                        "readOnly": true
+                    },
+                    "filters": {
+                        "$ref": "#/components/schemas/Filters"
+                    },
+                    "created_by_id": {
+                        "type": "integer",
+                        "readOnly": true,
+                        "nullable": true
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "readOnly": true
+                    }
+                },
+                "required": [
+                    "created_at",
+                    "created_by_id",
+                    "deleted",
+                    "id",
+                    "key",
+                    "team_id",
+                    "version"
+                ]
+            },
+            "Filters": {
+                "type": "object",
+                "description": "Reject misspelled configuration instead of silently dropping it.",
+                "properties": {
+                    "groups": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Condition"
+                        }
+                    },
+                    "multivariate": {
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/Multivariate"
+                            }
+                        ],
+                        "nullable": true
+                    },
+                    "payloads": {
+                        "type": "object",
+                        "additionalProperties": {
+                            "nullable": true
+                        }
+                    }
+                },
+                "required": [
+                    "groups"
+                ]
+            },
+            "Multivariate": {
+                "type": "object",
+                "description": "Reject misspelled configuration instead of silently dropping it.",
+                "properties": {
+                    "variants": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Variant"
+                        }
+                    }
+                },
+                "required": [
+                    "variants"
+                ]
+            },
+            "OperatorEnum": {
+                "enum": [
+                    "exact",
+                    "is_not",
+                    "icontains",
+                    "not_icontains",
+                    "gt",
+                    "gte",
+                    "lt",
+                    "lte",
+                    "in",
+                    "not_in",
+                    "is_set",
+                    "is_not_set"
+                ],
+                "type": "string",
+                "description": "* `exact` - exact\n* `is_not` - is_not\n* `icontains` - icontains\n* `not_icontains` - not_icontains\n* `gt` - gt\n* `gte` - gte\n* `lt` - lt\n* `lte` - lte\n* `in` - in\n* `not_in` - not_in\n* `is_set` - is_set\n* `is_not_set` - is_not_set"
+            },
+            "PatchedFeatureFlag": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "readOnly": true
+                    },
+                    "team_id": {
+                        "type": "integer",
+                        "readOnly": true
+                    },
+                    "key": {
+                        "type": "string",
+                        "maxLength": 400,
+                        "pattern": "^[-a-zA-Z0-9_]+$"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "active": {
+                        "type": "boolean"
+                    },
+                    "deleted": {
+                        "type": "boolean",
+                        "readOnly": true
+                    },
+                    "version": {
+                        "type": "integer",
+                        "readOnly": true
+                    },
+                    "filters": {
+                        "$ref": "#/components/schemas/Filters"
+                    },
+                    "created_by_id": {
+                        "type": "integer",
+                        "readOnly": true,
+                        "nullable": true
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "readOnly": true
+                    }
+                }
+            },
+            "PropertyFilter": {
+                "type": "object",
+                "description": "Reject misspelled configuration instead of silently dropping it.",
+                "properties": {
+                    "key": {
+                        "type": "string",
+                        "maxLength": 400
+                    },
+                    "type": {
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/TypeEnum"
+                            }
+                        ],
+                        "default": "person"
+                    },
+                    "operator": {
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/OperatorEnum"
+                            }
+                        ],
+                        "default": "exact"
+                    },
+                    "value": {
+                        "nullable": true
+                    }
+                },
+                "required": [
+                    "key"
+                ]
+            },
+            "ReasonEnum": {
+                "enum": [
+                    "condition_match",
+                    "no_condition_match",
+                    "out_of_rollout_bound",
+                    "flag_disabled"
+                ],
+                "type": "string",
+                "description": "* `condition_match` - condition_match\n* `no_condition_match` - no_condition_match\n* `out_of_rollout_bound` - out_of_rollout_bound\n* `flag_disabled` - flag_disabled"
+            },
+            "StepEnum": {
+                "enum": [
+                    "flag_active",
+                    "property",
+                    "condition",
+                    "rollout_hash",
+                    "variant_override",
+                    "variant_hash"
+                ],
+                "type": "string",
+                "description": "* `flag_active` - flag_active\n* `property` - property\n* `condition` - condition\n* `rollout_hash` - rollout_hash\n* `variant_override` - variant_override\n* `variant_hash` - variant_hash"
+            },
+            "TraceRequest": {
+                "type": "object",
+                "description": "Reject misspelled configuration instead of silently dropping it.",
+                "properties": {
+                    "distinct_id": {
+                        "type": "string",
+                        "maxLength": 400
+                    },
+                    "properties": {
+                        "type": "object",
+                        "additionalProperties": {
+                            "nullable": true
+                        }
+                    }
+                },
+                "required": [
+                    "distinct_id"
+                ]
+            },
+            "TraceStep": {
+                "type": "object",
+                "properties": {
+                    "step": {
+                        "$ref": "#/components/schemas/StepEnum"
+                    },
+                    "result": {
+                        "type": "boolean"
+                    },
+                    "condition_index": {
+                        "type": "integer"
+                    },
+                    "property_index": {
+                        "type": "integer"
+                    },
+                    "key": {
+                        "type": "string"
+                    },
+                    "operator": {
+                        "$ref": "#/components/schemas/OperatorEnum"
+                    },
+                    "actual": {
+                        "nullable": true
+                    },
+                    "expected": {
+                        "nullable": true
+                    },
+                    "missing": {
+                        "type": "boolean"
+                    },
+                    "index": {
+                        "type": "integer"
+                    },
+                    "filters_pass": {
+                        "type": "boolean"
+                    },
+                    "hash_key": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "value": {
+                        "type": "number",
+                        "format": "double",
+                        "nullable": true
+                    },
+                    "threshold": {
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "in_rollout": {
+                        "type": "boolean"
+                    },
+                    "variant": {
+                        "type": "string",
+                        "nullable": true
+                    }
+                },
+                "required": [
+                    "step"
+                ]
+            },
+            "TypeEnum": {
+                "enum": [
+                    "person"
+                ],
+                "type": "string",
+                "description": "* `person` - person"
+            },
+            "Variant": {
+                "type": "object",
+                "description": "Reject misspelled configuration instead of silently dropping it.",
+                "properties": {
+                    "key": {
+                        "type": "string",
+                        "maxLength": 400
+                    },
+                    "rollout_percentage": {
+                        "type": "number",
+                        "format": "double",
+                        "maximum": 100,
+                        "minimum": 0
+                    }
+                },
+                "required": [
+                    "key",
+                    "rollout_percentage"
+                ]
+            }
+        },
+        "securitySchemes": {
+            "cookieAuth": {
+                "type": "apiKey",
+                "in": "cookie",
+                "name": "sessionid"
+            }
+        }
+    }
+}

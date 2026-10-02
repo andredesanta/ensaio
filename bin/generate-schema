@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+# Regenerate the backend contract consumed by orval in M3.
+set -euo pipefail
+cd "$(dirname "$0")/.."
+
+uv run python manage.py spectacular \
+    --format openapi-json \
+    --file frontend/openapi.json \
+    --validate

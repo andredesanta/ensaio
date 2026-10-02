@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+# Fail when serializers/views changed without regenerating frontend/openapi.json.
+set -euo pipefail
+cd "$(dirname "$0")/.."
+
+generated_schema="$(mktemp)"
+trap 'rm -f "$generated_schema"' EXIT
+
+uv run python manage.py spectacular \
+    --format openapi-json \
+    --file "$generated_schema" \
+    --validate
+
+diff -u frontend/openapi.json "$generated_schema"

@@ -10,6 +10,7 @@ uv run tach check
 # Tests use root development dependencies, while check-external validates each
 # package's runtime dependencies. Keep test imports out of that package audit.
 uv run tach check-external -e '**/tests/**'
+./bin/check-schema
 uv run pytest
 
 (
