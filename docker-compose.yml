@@ -1,0 +1,21 @@
+# Postgres only. The Django process and the Vite console run on the host
+# (`bin/start`), which is how you edit code without rebuilding an image.
+services:
+  db:
+    image: postgres:15.12-alpine
+    environment:
+      POSTGRES_USER: ensaio
+      POSTGRES_PASSWORD: ensaio
+      POSTGRES_DB: ensaio
+    ports:
+      - "5432:5432"
+    volumes:
+      - ensaio_pg:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ensaio -d ensaio"]
+      interval: 2s
+      timeout: 5s
+      retries: 30
+
+volumes:
+  ensaio_pg:
