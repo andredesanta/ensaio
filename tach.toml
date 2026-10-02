@@ -11,13 +11,9 @@
 # `tach check` watches first-party imports. `tach check-external` is what
 # enforces `cannot_depend_on_external`.
 
-# The kernel root is first so a file under packages/ensaio_kernel/src is the
-# module ``ensaio_kernel``, not ``packages.ensaio_kernel.src.ensaio_kernel``.
-# Tach uses the first source root that contains the file.
-source_roots = [
-    "packages/ensaio_kernel/src",
-    ".",
-]
+# Tach's first-party graph follows repository paths. The kernel's distribution
+# boundary is separately understood by `check-external` from its pyproject.toml.
+source_roots = ["."]
 exclude = [
     "**/*__pycache__",
     "**/*egg-info",
@@ -40,7 +36,7 @@ exclude = [
 ]
 
 [[modules]]
-path = "ensaio_kernel"
+path = "packages.ensaio_kernel.src.ensaio_kernel"
 depends_on = []
 cannot_depend_on_external = [
     "django",

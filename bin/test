@@ -7,7 +7,9 @@ uv run ruff check .
 uv run ruff format --check .
 uv run mypy
 uv run tach check
-uv run tach check-external
+# Tests use root development dependencies, while check-external validates each
+# package's runtime dependencies. Keep test imports out of that package audit.
+uv run tach check-external -e '**/tests/**'
 uv run pytest
 
 (
