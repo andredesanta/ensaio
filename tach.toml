@@ -1,0 +1,61 @@
+# First-party import boundaries. `uv run tach check` fails CI when an import
+# crosses a line this file does not allow.
+#
+# `depends_on = []` means "no other first-party module". Omitting `depends_on`
+# would mean the opposite: import anything. `exact = true` means the list must
+# match the imports that actually exist, so a dependency we declare "for later"
+# is a failure until some file imports it.
+#
+# The kernel is its own distribution (`ensaio-kernel`), so Tach treats
+# `import django` inside it as an external dependency, not a first-party one.
+# `tach check` watches first-party imports. `tach check-external` is what
+# enforces `cannot_depend_on_external`.
+
+# The kernel root is first so a file under packages/ensaio_kernel/src is the
+# module ``ensaio_kernel``, not ``packages.ensaio_kernel.src.ensaio_kernel``.
+# Tach uses the first source root that contains the file.
+source_roots = [
+    "packages/ensaio_kernel/src",
+    ".",
+]
+exclude = [
+    "**/*__pycache__",
+    "**/*egg-info",
+    ".venv",
+    "frontend",
+    "docs",
+]
+exact = true
+forbid_circular_dependencies = true
+# A Python file that is not inside one of the modules below fails the check.
+root_module = "forbid"
+
+# Used from settings as strings (middleware path, database engine), not imported.
+# check-external would otherwise report them as unused.
+[external]
+exclude = [
+    "psycopg",
+    "django_cors_headers",
+    "django_structlog",
+]
+
+[[modules]]
+path = "ensaio_kernel"
+depends_on = []
+cannot_depend_on_external = [
+    "django",
+    "rest_framework",
+    "psycopg",
+    "psycopg2",
+    "requests",
+    "httpx",
+    "urllib3",
+]
+
+[[modules]]
+path = "ensaio_project"
+depends_on = []
+
+[[modules]]
+path = "products.feature_flags"
+depends_on = []
