@@ -17,7 +17,7 @@ Ensaio is a learning project: a small feature-flag platform shaped like PostHog'
 
 ```text
 packages/ensaio_kernel/     pure evaluation. no Django or I/O
-products/feature_flags/     CRUD/trace, console, evaluation + definitions
+products/feature_flags/     CRUD/trace, console, evaluation + definitions, rollouts
 ensaio_project/             settings, root URLs
 frontend/                   Vite shell. Product UI does not go here
 
