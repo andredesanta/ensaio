@@ -1,9 +1,4 @@
-"""Django settings for the Ensaio scaffold.
-
-One settings module is enough at this size. PostHog splits settings across
-``posthog/settings/`` because that tree is huge. Splitting now would hide the
-whole configuration from the person learning it.
-"""
+"""Django settings for the Ensaio scaffold."""
 
 import os
 from pathlib import Path
@@ -73,7 +68,7 @@ DATABASES = {
     }
 }
 
-# Definitions caching will use this. Local memory is the dev backend the
+# Definitions caching (M4) will use this. Local memory is the dev backend the
 # design doc specifies. There is no Redis in this project.
 CACHES = {
     "default": {
@@ -109,7 +104,7 @@ CSRF_TRUSTED_ORIGINS = [
     "http://127.0.0.1:5173",
 ]
 
-# Management API is session-authenticated. A view that must be public,
+# Management API (M2) is session-authenticated. A view that must be public,
 # such as POST /flags, will set its own permission class. The default stays
 # closed so a new view is not accidentally anonymous.
 REST_FRAMEWORK = {
@@ -126,6 +121,10 @@ SPECTACULAR_SETTINGS = {
     "TITLE": "Ensaio",
     "DESCRIPTION": "Feature flag management API. Types for the console are generated from this schema.",
     "VERSION": "0.0.0",
+    # Generate request components without read-only response fields. Orval uses
+    # these as create/update inputs instead of forcing the console to invent
+    # values for id, team_id, version, and timestamps.
+    "COMPONENT_SPLIT_REQUEST": True,
 }
 
 configure_structlog()

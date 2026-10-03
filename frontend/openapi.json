@@ -64,17 +64,17 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/FeatureFlag"
+                                "$ref": "#/components/schemas/FeatureFlagRequest"
                             }
                         },
                         "application/x-www-form-urlencoded": {
                             "schema": {
-                                "$ref": "#/components/schemas/FeatureFlag"
+                                "$ref": "#/components/schemas/FeatureFlagRequest"
                             }
                         },
                         "multipart/form-data": {
                             "schema": {
-                                "$ref": "#/components/schemas/FeatureFlag"
+                                "$ref": "#/components/schemas/FeatureFlagRequest"
                             }
                         }
                     },
@@ -172,17 +172,17 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/FeatureFlag"
+                                "$ref": "#/components/schemas/FeatureFlagRequest"
                             }
                         },
                         "application/x-www-form-urlencoded": {
                             "schema": {
-                                "$ref": "#/components/schemas/FeatureFlag"
+                                "$ref": "#/components/schemas/FeatureFlagRequest"
                             }
                         },
                         "multipart/form-data": {
                             "schema": {
-                                "$ref": "#/components/schemas/FeatureFlag"
+                                "$ref": "#/components/schemas/FeatureFlagRequest"
                             }
                         }
                     },
@@ -235,17 +235,17 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/PatchedFeatureFlag"
+                                "$ref": "#/components/schemas/PatchedFeatureFlagRequest"
                             }
                         },
                         "application/x-www-form-urlencoded": {
                             "schema": {
-                                "$ref": "#/components/schemas/PatchedFeatureFlag"
+                                "$ref": "#/components/schemas/PatchedFeatureFlagRequest"
                             }
                         },
                         "multipart/form-data": {
                             "schema": {
-                                "$ref": "#/components/schemas/PatchedFeatureFlag"
+                                "$ref": "#/components/schemas/PatchedFeatureFlagRequest"
                             }
                         }
                     }
@@ -335,17 +335,17 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/TraceRequest"
+                                "$ref": "#/components/schemas/TraceRequestRequest"
                             }
                         },
                         "application/x-www-form-urlencoded": {
                             "schema": {
-                                "$ref": "#/components/schemas/TraceRequest"
+                                "$ref": "#/components/schemas/TraceRequestRequest"
                             }
                         },
                         "multipart/form-data": {
                             "schema": {
-                                "$ref": "#/components/schemas/TraceRequest"
+                                "$ref": "#/components/schemas/TraceRequestRequest"
                             }
                         }
                     },
@@ -563,6 +563,33 @@
                     "properties"
                 ]
             },
+            "ConditionRequest": {
+                "type": "object",
+                "description": "Reject misspelled configuration instead of silently dropping it.",
+                "properties": {
+                    "properties": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/PropertyFilterRequest"
+                        }
+                    },
+                    "rollout_percentage": {
+                        "type": "number",
+                        "format": "double",
+                        "maximum": 100,
+                        "minimum": 0,
+                        "default": 100.0
+                    },
+                    "variant": {
+                        "type": "string",
+                        "nullable": true,
+                        "minLength": 1
+                    }
+                },
+                "required": [
+                    "properties"
+                ]
+            },
             "EvaluationResult": {
                 "type": "object",
                 "properties": {
@@ -653,6 +680,29 @@
                     "version"
                 ]
             },
+            "FeatureFlagRequest": {
+                "type": "object",
+                "properties": {
+                    "key": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 400,
+                        "pattern": "^[-a-zA-Z0-9_]+$"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "active": {
+                        "type": "boolean"
+                    },
+                    "filters": {
+                        "$ref": "#/components/schemas/FiltersRequest"
+                    }
+                },
+                "required": [
+                    "key"
+                ]
+            },
             "Filters": {
                 "type": "object",
                 "description": "Reject misspelled configuration instead of silently dropping it.",
@@ -667,6 +717,35 @@
                         "allOf": [
                             {
                                 "$ref": "#/components/schemas/Multivariate"
+                            }
+                        ],
+                        "nullable": true
+                    },
+                    "payloads": {
+                        "type": "object",
+                        "additionalProperties": {
+                            "nullable": true
+                        }
+                    }
+                },
+                "required": [
+                    "groups"
+                ]
+            },
+            "FiltersRequest": {
+                "type": "object",
+                "description": "Reject misspelled configuration instead of silently dropping it.",
+                "properties": {
+                    "groups": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ConditionRequest"
+                        }
+                    },
+                    "multivariate": {
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/MultivariateRequest"
                             }
                         ],
                         "nullable": true
@@ -697,6 +776,21 @@
                     "variants"
                 ]
             },
+            "MultivariateRequest": {
+                "type": "object",
+                "description": "Reject misspelled configuration instead of silently dropping it.",
+                "properties": {
+                    "variants": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/VariantRequest"
+                        }
+                    }
+                },
+                "required": [
+                    "variants"
+                ]
+            },
             "OperatorEnum": {
                 "enum": [
                     "exact",
@@ -715,19 +809,12 @@
                 "type": "string",
                 "description": "* `exact` - exact\n* `is_not` - is_not\n* `icontains` - icontains\n* `not_icontains` - not_icontains\n* `gt` - gt\n* `gte` - gte\n* `lt` - lt\n* `lte` - lte\n* `in` - in\n* `not_in` - not_in\n* `is_set` - is_set\n* `is_not_set` - is_not_set"
             },
-            "PatchedFeatureFlag": {
+            "PatchedFeatureFlagRequest": {
                 "type": "object",
                 "properties": {
-                    "id": {
-                        "type": "integer",
-                        "readOnly": true
-                    },
-                    "team_id": {
-                        "type": "integer",
-                        "readOnly": true
-                    },
                     "key": {
                         "type": "string",
+                        "minLength": 1,
                         "maxLength": 400,
                         "pattern": "^[-a-zA-Z0-9_]+$"
                     },
@@ -737,26 +824,8 @@
                     "active": {
                         "type": "boolean"
                     },
-                    "deleted": {
-                        "type": "boolean",
-                        "readOnly": true
-                    },
-                    "version": {
-                        "type": "integer",
-                        "readOnly": true
-                    },
                     "filters": {
-                        "$ref": "#/components/schemas/Filters"
-                    },
-                    "created_by_id": {
-                        "type": "integer",
-                        "readOnly": true,
-                        "nullable": true
-                    },
-                    "created_at": {
-                        "type": "string",
-                        "format": "date-time",
-                        "readOnly": true
+                        "$ref": "#/components/schemas/FiltersRequest"
                     }
                 }
             },
@@ -766,6 +835,39 @@
                 "properties": {
                     "key": {
                         "type": "string",
+                        "maxLength": 400
+                    },
+                    "type": {
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/TypeEnum"
+                            }
+                        ],
+                        "default": "person"
+                    },
+                    "operator": {
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/OperatorEnum"
+                            }
+                        ],
+                        "default": "exact"
+                    },
+                    "value": {
+                        "nullable": true
+                    }
+                },
+                "required": [
+                    "key"
+                ]
+            },
+            "PropertyFilterRequest": {
+                "type": "object",
+                "description": "Reject misspelled configuration instead of silently dropping it.",
+                "properties": {
+                    "key": {
+                        "type": "string",
+                        "minLength": 1,
                         "maxLength": 400
                     },
                     "type": {
@@ -814,7 +916,7 @@
                 "type": "string",
                 "description": "* `flag_active` - flag_active\n* `property` - property\n* `condition` - condition\n* `rollout_hash` - rollout_hash\n* `variant_override` - variant_override\n* `variant_hash` - variant_hash"
             },
-            "TraceRequest": {
+            "TraceRequestRequest": {
                 "type": "object",
                 "description": "Reject misspelled configuration instead of silently dropping it.",
                 "properties": {
@@ -907,6 +1009,27 @@
                 "properties": {
                     "key": {
                         "type": "string",
+                        "maxLength": 400
+                    },
+                    "rollout_percentage": {
+                        "type": "number",
+                        "format": "double",
+                        "maximum": 100,
+                        "minimum": 0
+                    }
+                },
+                "required": [
+                    "key",
+                    "rollout_percentage"
+                ]
+            },
+            "VariantRequest": {
+                "type": "object",
+                "description": "Reject misspelled configuration instead of silently dropping it.",
+                "properties": {
+                    "key": {
+                        "type": "string",
+                        "minLength": 1,
                         "maxLength": 400
                     },
                     "rollout_percentage": {

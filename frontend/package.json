@@ -6,9 +6,15 @@
         "dev": "vite",
         "build": "tsc --noEmit && vite build",
         "typecheck": "tsc --noEmit",
+        "generate:api": "orval --config orval.config.ts",
+        "generate:kea": "kea-typegen write --config tsconfig.json --root .. --no-prettier",
+        "generate": "corepack pnpm run generate:api && corepack pnpm run generate:kea && corepack pnpm run format",
         "test": "jest",
-        "lint": "oxlint",
-        "format:check": "oxfmt --check --ignore-path .oxfmtignore ."
+        "test:smoke": "playwright test",
+        "lint": "cd .. && frontend/node_modules/.bin/oxlint frontend products/feature_flags/frontend products/feature_flags/manifest.tsx",
+        "lint:fix": "cd .. && frontend/node_modules/.bin/oxlint --fix frontend products/feature_flags/frontend products/feature_flags/manifest.tsx",
+        "format": "cd .. && frontend/node_modules/.bin/oxfmt --write --config frontend/.oxfmtrc.json --ignore-path frontend/.oxfmtignore frontend products/feature_flags/frontend products/feature_flags/manifest.tsx",
+        "format:check": "cd .. && frontend/node_modules/.bin/oxfmt --check --config frontend/.oxfmtrc.json --ignore-path frontend/.oxfmtignore frontend products/feature_flags/frontend products/feature_flags/manifest.tsx"
     },
     "dependencies": {
         "kea": "^4.0.0-pre.6",
@@ -19,8 +25,10 @@
         "react-dom": "^18.3.1"
     },
     "devDependencies": {
+        "@playwright/test": "1.60.0",
         "@tailwindcss/vite": "4.3.0",
         "@types/jest": "^29.5.12",
+        "@types/node": "^24.19.0",
         "@types/react": "^18.3.27",
         "@types/react-dom": "^18.3.7",
         "@vitejs/plugin-react": "^5.2.0",
@@ -28,6 +36,7 @@
         "jest-environment-jsdom": "^29.7.0",
         "kea-test-utils": "^0.2.4",
         "kea-typegen": "3.8.3",
+        "orval": "8.14.0",
         "oxfmt": "^0.57.0",
         "oxlint": "^1.72.0",
         "tailwindcss": "4.3.0",

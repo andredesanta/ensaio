@@ -6,6 +6,17 @@
         "module": "ESNext",
         "skipLibCheck": true,
         "moduleResolution": "bundler",
+        "paths": {
+            "kea": ["./node_modules/kea"],
+            "kea-forms": ["./node_modules/kea-forms"],
+            "kea-loaders": ["./node_modules/kea-loaders"],
+            "kea-router": ["./node_modules/kea-router"],
+            "kea-test-utils": ["./node_modules/kea-test-utils"],
+            "react": ["./node_modules/@types/react/index.d.ts"],
+            "react/*": ["./node_modules/@types/react/*"],
+            "react-dom": ["./node_modules/@types/react-dom/index.d.ts"],
+            "react-dom/*": ["./node_modules/@types/react-dom/*"]
+        },
         "isolatedModules": true,
         "moduleDetection": "force",
         "noEmit": true,
@@ -16,7 +27,15 @@
         "noFallthroughCasesInSwitch": true,
         "noUncheckedIndexedAccess": true,
         "verbatimModuleSyntax": true,
-        "types": ["vite/client", "jest"]
+        "types": ["vite/client", "jest", "node"]
     },
-    "include": ["src", "vite.config.ts", "../products/feature_flags/manifest.tsx"]
+    "include": [
+        "src",
+        "e2e",
+        "vite.config.ts",
+        "playwright.config.ts",
+        "orval.config.ts",
+        "../products/feature_flags/manifest.tsx",
+        "../products/feature_flags/frontend"
+    ]
 }
