@@ -121,10 +121,18 @@ SPECTACULAR_SETTINGS = {
     "TITLE": "Ensaio",
     "DESCRIPTION": "Feature flag management API. Types for the console are generated from this schema.",
     "VERSION": "0.0.0",
+    # Keep management operation IDs stable when root-level public APIs are
+    # added; otherwise drf-spectacular's inferred common prefix changes.
+    "SCHEMA_PATH_PREFIX": r"/api",
     # Generate request components without read-only response fields. Orval uses
     # these as create/update inputs instead of forcing the console to invent
     # values for id, team_id, version, and timestamps.
     "COMPONENT_SPLIT_REQUEST": True,
+    # Trace and /flags responses expose the same kernel reason choices under
+    # different field names. Give that shared set one stable OpenAPI enum name.
+    "ENUM_NAME_OVERRIDES": {
+        "EvaluationReasonEnum": "products.feature_flags.backend.serializers.EVALUATION_REASONS",
+    },
 }
 
 configure_structlog()

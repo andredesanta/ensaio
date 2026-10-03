@@ -7,6 +7,8 @@ from django.db import models
 from django.db.models import F, Q
 from django.db.models.base import ModelBase
 
+from products.feature_flags.backend.definitions_cache import schedule_definitions_cache_invalidation
+
 PUBLIC_TOKEN_PREFIX = "ens_pub_"
 SECRET_TOKEN_PREFIX = "ens_sec_"
 
@@ -113,3 +115,6 @@ class FeatureFlag(models.Model):
 
         if is_update:
             self.refresh_from_db(fields=["version"], using=using)
+
+        schedule_definitions_cache_invalidation(self.team_id)
+    
