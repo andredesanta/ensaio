@@ -13,7 +13,11 @@ import type {
     FlagsCreateParams,
     FlagsRequestRequest,
     FlagsResponse,
+    GuardrailSample,
+    GuardrailSampleRequest,
     PatchedFeatureFlagRequest,
+    RolloutPlan,
+    RolloutPlanRequest,
     SchemaRetrieve200Four,
     SchemaRetrieve200One,
     SchemaRetrieve200Three,
@@ -202,6 +206,163 @@ export const projectsFeatureFlagsDestroy = async (
         ...options,
         method: 'DELETE',
     })
+}
+
+export type projectsFeatureFlagsGuardrailSamplesCreateResponse201 = {
+    data: GuardrailSample
+    status: 201
+}
+
+export type projectsFeatureFlagsGuardrailSamplesCreateResponseSuccess =
+    projectsFeatureFlagsGuardrailSamplesCreateResponse201 & {
+        headers: Headers
+    }
+
+export type projectsFeatureFlagsGuardrailSamplesCreateResponse =
+    projectsFeatureFlagsGuardrailSamplesCreateResponseSuccess
+
+export const getProjectsFeatureFlagsGuardrailSamplesCreateUrl = (teamId: number, id: number) => {
+    return `/api/projects/${teamId}/feature_flags/${id}/guardrail_samples/`
+}
+
+/**
+ * Make the project id in the URL an unavoidable queryset boundary.
+ */
+export const projectsFeatureFlagsGuardrailSamplesCreate = async (
+    teamId: number,
+    id: number,
+    guardrailSampleRequest: GuardrailSampleRequest,
+    options?: RequestInit
+): Promise<projectsFeatureFlagsGuardrailSamplesCreateResponse> => {
+    return apiClient<projectsFeatureFlagsGuardrailSamplesCreateResponse>(
+        getProjectsFeatureFlagsGuardrailSamplesCreateUrl(teamId, id),
+        {
+            ...options,
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...options?.headers },
+            body: JSON.stringify(guardrailSampleRequest),
+        }
+    )
+}
+
+export type projectsFeatureFlagsRolloutPlanRetrieveResponse200 = {
+    data: RolloutPlan
+    status: 200
+}
+
+export type projectsFeatureFlagsRolloutPlanRetrieveResponse404 = {
+    data: void
+    status: 404
+}
+
+export type projectsFeatureFlagsRolloutPlanRetrieveResponseSuccess =
+    projectsFeatureFlagsRolloutPlanRetrieveResponse200 & {
+        headers: Headers
+    }
+export type projectsFeatureFlagsRolloutPlanRetrieveResponseError =
+    projectsFeatureFlagsRolloutPlanRetrieveResponse404 & {
+        headers: Headers
+    }
+
+export type projectsFeatureFlagsRolloutPlanRetrieveResponse =
+    | projectsFeatureFlagsRolloutPlanRetrieveResponseSuccess
+    | projectsFeatureFlagsRolloutPlanRetrieveResponseError
+
+export const getProjectsFeatureFlagsRolloutPlanRetrieveUrl = (teamId: number, id: number) => {
+    return `/api/projects/${teamId}/feature_flags/${id}/rollout_plan/`
+}
+
+/**
+ * Make the project id in the URL an unavoidable queryset boundary.
+ */
+export const projectsFeatureFlagsRolloutPlanRetrieve = async (
+    teamId: number,
+    id: number,
+    options?: RequestInit
+): Promise<projectsFeatureFlagsRolloutPlanRetrieveResponse> => {
+    return apiClient<projectsFeatureFlagsRolloutPlanRetrieveResponse>(
+        getProjectsFeatureFlagsRolloutPlanRetrieveUrl(teamId, id),
+        {
+            ...options,
+            method: 'GET',
+        }
+    )
+}
+
+export type projectsFeatureFlagsRolloutPlanUpdateResponse200 = {
+    data: RolloutPlan
+    status: 200
+}
+
+export type projectsFeatureFlagsRolloutPlanUpdateResponse201 = {
+    data: RolloutPlan
+    status: 201
+}
+
+export type projectsFeatureFlagsRolloutPlanUpdateResponseSuccess = (
+    | projectsFeatureFlagsRolloutPlanUpdateResponse200
+    | projectsFeatureFlagsRolloutPlanUpdateResponse201
+) & {
+    headers: Headers
+}
+
+export type projectsFeatureFlagsRolloutPlanUpdateResponse = projectsFeatureFlagsRolloutPlanUpdateResponseSuccess
+
+export const getProjectsFeatureFlagsRolloutPlanUpdateUrl = (teamId: number, id: number) => {
+    return `/api/projects/${teamId}/feature_flags/${id}/rollout_plan/`
+}
+
+/**
+ * Make the project id in the URL an unavoidable queryset boundary.
+ */
+export const projectsFeatureFlagsRolloutPlanUpdate = async (
+    teamId: number,
+    id: number,
+    rolloutPlanRequest: RolloutPlanRequest,
+    options?: RequestInit
+): Promise<projectsFeatureFlagsRolloutPlanUpdateResponse> => {
+    return apiClient<projectsFeatureFlagsRolloutPlanUpdateResponse>(
+        getProjectsFeatureFlagsRolloutPlanUpdateUrl(teamId, id),
+        {
+            ...options,
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json', ...options?.headers },
+            body: JSON.stringify(rolloutPlanRequest),
+        }
+    )
+}
+
+export type projectsFeatureFlagsRolloutPlanDestroyResponse204 = {
+    data: void
+    status: 204
+}
+
+export type projectsFeatureFlagsRolloutPlanDestroyResponseSuccess =
+    projectsFeatureFlagsRolloutPlanDestroyResponse204 & {
+        headers: Headers
+    }
+
+export type projectsFeatureFlagsRolloutPlanDestroyResponse = projectsFeatureFlagsRolloutPlanDestroyResponseSuccess
+
+export const getProjectsFeatureFlagsRolloutPlanDestroyUrl = (teamId: number, id: number) => {
+    return `/api/projects/${teamId}/feature_flags/${id}/rollout_plan/`
+}
+
+/**
+ * Make the project id in the URL an unavoidable queryset boundary.
+ */
+export const projectsFeatureFlagsRolloutPlanDestroy = async (
+    teamId: number,
+    id: number,
+    options?: RequestInit
+): Promise<projectsFeatureFlagsRolloutPlanDestroyResponse> => {
+    return apiClient<projectsFeatureFlagsRolloutPlanDestroyResponse>(
+        getProjectsFeatureFlagsRolloutPlanDestroyUrl(teamId, id),
+        {
+            ...options,
+            method: 'DELETE',
+        }
+    )
 }
 
 export type projectsFeatureFlagsTraceCreateResponse200 = {

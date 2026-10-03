@@ -1,15 +1,49 @@
 import { expect, test } from '@playwright/test'
 
-import type { FeatureFlag, FeatureFlagRequest } from '../../products/feature_flags/frontend/generated/models'
+import type {
+    FeatureFlag,
+    FeatureFlagRequest,
+    RolloutPlanRequest,
+} from '../../products/feature_flags/frontend/generated/models'
 
-test('creates a multivariate flag and explains a condition match', async ({ page }) => {
+test('creates a flag, activates its health rollout, and explains a condition match', async ({ page }) => {
     let flags: FeatureFlag[] = []
     let submittedFlag: FeatureFlagRequest | null = null
+    let submittedRolloutPlan: RolloutPlanRequest | null = null
 
     await page.route('**/api/projects/1/feature_flags/**', async (route) => {
         const request = route.request()
         const url = new URL(request.url())
         const pathname = url.pathname
+
+        if (pathname.endsWith('/rollout_plan/') && request.method() === 'GET') {
+            await route.fulfill({
+                status: 404,
+                contentType: 'application/json',
+                body: JSON.stringify({ detail: 'Not found.' }),
+            })
+            return
+        }
+
+        if (pathname.endsWith('/rollout_plan/') && request.method() === 'PUT') {
+            submittedRolloutPlan = request.postDataJSON() as RolloutPlanRequest
+            await route.fulfill({
+                status: 201,
+                contentType: 'application/json',
+                body: JSON.stringify({
+                    id: 7,
+                    flag_id: 101,
+                    ...submittedRolloutPlan,
+                    current_phase_index: 0,
+                    phase_entered_at: '2026-10-02T12:00:00Z',
+                    hold_reason: '',
+                    hold_started_at: null,
+                    recent_samples: [],
+                    created_at: '2026-10-02T12:00:00Z',
+                }),
+            })
+            return
+        }
 
         if (pathname.endsWith('/trace/') && request.method() === 'POST') {
             await route.fulfill({
@@ -58,6 +92,7 @@ test('creates a multivariate flag and explains a condition match', async ({ page
                 ...submittedFlag,
                 deleted: false,
                 version: 1,
+                rollout_plan_status: null,
                 created_by_id: 1,
                 created_at: '2026-10-01T12:00:00Z',
             }
@@ -105,6 +140,12 @@ test('creates a multivariate flag and explains a condition match', async ({ page
         { key: 'control', rollout_percentage: 50 },
         { key: 'test', rollout_percentage: 50 },
     ])
+
+    await page.getByRole('button', { name: 'Activate' }).click()
+    await expect(page.getByText('ACTIVE', { exact: true })).toBeVisible()
+    const capturedRolloutPlan = submittedRolloutPlan as RolloutPlanRequest | null
+    expect(capturedRolloutPlan?.managed_group_index).toBe(0)
+    expect(capturedRolloutPlan?.phases.map((phase) => phase.percentage)).toEqual([1, 10, 50, 100])
 
     await page.getByRole('button', { name: 'Open trace' }).click()
     await page.getByLabel('Distinct ID').fill('u_7')

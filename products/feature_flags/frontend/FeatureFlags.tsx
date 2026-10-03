@@ -101,6 +101,11 @@ export function FeatureFlags({ teamId }: FeatureFlagsProps): ReactElement {
                                                         toggleFlagActive(flag.id, event.target.checked)
                                                     }
                                                 />
+                                                {flag.rollout_plan_status != null ? (
+                                                    <div className="mt-2">
+                                                        <Tag>Rollout {flag.rollout_plan_status}</Tag>
+                                                    </div>
+                                                ) : null}
                                             </td>
                                             <td className="px-4 py-4">
                                                 <div className="flex justify-end gap-2">

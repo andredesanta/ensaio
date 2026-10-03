@@ -5,6 +5,7 @@
  * Feature flag management API. Types for the console are generated from this schema.
  * OpenAPI spec version: 0.0.0
  */
+import type { FeatureFlagRolloutPlanStatus } from './featureFlagRolloutPlanStatus'
 import type { Filters } from './filters'
 
 export interface FeatureFlag {
@@ -20,6 +21,9 @@ export interface FeatureFlag {
     readonly deleted: boolean
     readonly version: number
     filters?: Filters
+    readonly rollout_plan_status:
+        | (typeof FeatureFlagRolloutPlanStatus)[keyof typeof FeatureFlagRolloutPlanStatus]
+        | null
     /** @nullable */
     readonly created_by_id: number | null
     readonly created_at: string

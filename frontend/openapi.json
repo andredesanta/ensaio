@@ -305,6 +305,228 @@
                 }
             }
         },
+        "/api/projects/{team_id}/feature_flags/{id}/guardrail_samples/": {
+            "post": {
+                "operationId": "projects_feature_flags_guardrail_samples_create",
+                "description": "Make the project id in the URL an unavoidable queryset boundary.",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "description": "A unique integer value identifying this feature flag.",
+                        "required": true
+                    },
+                    {
+                        "in": "path",
+                        "name": "team_id",
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "projects"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/GuardrailSampleRequest"
+                            }
+                        },
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/GuardrailSampleRequest"
+                            }
+                        },
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/GuardrailSampleRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "security": [
+                    {
+                        "cookieAuth": []
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/GuardrailSample"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/api/projects/{team_id}/feature_flags/{id}/rollout_plan/": {
+            "get": {
+                "operationId": "projects_feature_flags_rollout_plan_retrieve",
+                "description": "Make the project id in the URL an unavoidable queryset boundary.",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "description": "A unique integer value identifying this feature flag.",
+                        "required": true
+                    },
+                    {
+                        "in": "path",
+                        "name": "team_id",
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "projects"
+                ],
+                "security": [
+                    {
+                        "cookieAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/RolloutPlan"
+                                }
+                            }
+                        },
+                        "description": ""
+                    },
+                    "404": {
+                        "description": "No rollout plan."
+                    }
+                }
+            },
+            "put": {
+                "operationId": "projects_feature_flags_rollout_plan_update",
+                "description": "Make the project id in the URL an unavoidable queryset boundary.",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "description": "A unique integer value identifying this feature flag.",
+                        "required": true
+                    },
+                    {
+                        "in": "path",
+                        "name": "team_id",
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "projects"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RolloutPlanRequest"
+                            }
+                        },
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RolloutPlanRequest"
+                            }
+                        },
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RolloutPlanRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "security": [
+                    {
+                        "cookieAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/RolloutPlan"
+                                }
+                            }
+                        },
+                        "description": ""
+                    },
+                    "201": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/RolloutPlan"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                }
+            },
+            "delete": {
+                "operationId": "projects_feature_flags_rollout_plan_destroy",
+                "description": "Make the project id in the URL an unavoidable queryset boundary.",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "description": "A unique integer value identifying this feature flag.",
+                        "required": true
+                    },
+                    {
+                        "in": "path",
+                        "name": "team_id",
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "projects"
+                ],
+                "security": [
+                    {
+                        "cookieAuth": []
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Rollout plan deleted."
+                    }
+                }
+            }
+        },
         "/api/projects/{team_id}/feature_flags/{id}/trace/": {
             "post": {
                 "operationId": "projects_feature_flags_trace_create",
@@ -644,6 +866,16 @@
     },
     "components": {
         "schemas": {
+            "ComparisonEnum": {
+                "enum": [
+                    "lt",
+                    "lte",
+                    "gt",
+                    "gte"
+                ],
+                "type": "string",
+                "description": "* `lt` - lt\n* `lte` - lte\n* `gt` - gt\n* `gte` - gte"
+            },
             "Condition": {
                 "type": "object",
                 "description": "Reject misspelled configuration instead of silently dropping it.",
@@ -790,6 +1022,18 @@
                     "filters": {
                         "$ref": "#/components/schemas/Filters"
                     },
+                    "rollout_plan_status": {
+                        "nullable": true,
+                        "readOnly": true,
+                        "oneOf": [
+                            {
+                                "$ref": "#/components/schemas/RolloutStatusEnum"
+                            },
+                            {
+                                "$ref": "#/components/schemas/NullEnum"
+                            }
+                        ]
+                    },
                     "created_by_id": {
                         "type": "integer",
                         "readOnly": true,
@@ -807,6 +1051,7 @@
                     "deleted",
                     "id",
                     "key",
+                    "rollout_plan_status",
                     "team_id",
                     "version"
                 ]
@@ -998,6 +1243,139 @@
                     "flags"
                 ]
             },
+            "Guardrail": {
+                "type": "object",
+                "description": "Reject misspelled configuration instead of silently dropping it.",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "maxLength": 100
+                    },
+                    "comparison": {
+                        "$ref": "#/components/schemas/ComparisonEnum"
+                    },
+                    "threshold": {
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "window_minutes": {
+                        "type": "integer",
+                        "minimum": 1
+                    },
+                    "min_samples": {
+                        "type": "integer",
+                        "minimum": 1
+                    },
+                    "max_hold_minutes": {
+                        "type": "integer",
+                        "minimum": 1
+                    }
+                },
+                "required": [
+                    "comparison",
+                    "max_hold_minutes",
+                    "min_samples",
+                    "name",
+                    "threshold",
+                    "window_minutes"
+                ]
+            },
+            "GuardrailRequest": {
+                "type": "object",
+                "description": "Reject misspelled configuration instead of silently dropping it.",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 100
+                    },
+                    "comparison": {
+                        "$ref": "#/components/schemas/ComparisonEnum"
+                    },
+                    "threshold": {
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "window_minutes": {
+                        "type": "integer",
+                        "minimum": 1
+                    },
+                    "min_samples": {
+                        "type": "integer",
+                        "minimum": 1
+                    },
+                    "max_hold_minutes": {
+                        "type": "integer",
+                        "minimum": 1
+                    }
+                },
+                "required": [
+                    "comparison",
+                    "max_hold_minutes",
+                    "min_samples",
+                    "name",
+                    "threshold",
+                    "window_minutes"
+                ]
+            },
+            "GuardrailSample": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "readOnly": true
+                    },
+                    "plan_id": {
+                        "type": "integer",
+                        "readOnly": true
+                    },
+                    "recorded_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "readOnly": true
+                    },
+                    "value": {
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "sample_count": {
+                        "type": "integer",
+                        "maximum": 2147483647,
+                        "minimum": 0
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "readOnly": true
+                    }
+                },
+                "required": [
+                    "created_at",
+                    "id",
+                    "plan_id",
+                    "recorded_at",
+                    "sample_count",
+                    "value"
+                ]
+            },
+            "GuardrailSampleRequest": {
+                "type": "object",
+                "properties": {
+                    "value": {
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "sample_count": {
+                        "type": "integer",
+                        "maximum": 2147483647,
+                        "minimum": 0
+                    }
+                },
+                "required": [
+                    "sample_count",
+                    "value"
+                ]
+            },
             "LocalEvaluationFlag": {
                 "type": "object",
                 "properties": {
@@ -1049,6 +1427,11 @@
                 },
                 "required": [
                     "variants"
+                ]
+            },
+            "NullEnum": {
+                "enum": [
+                    null
                 ]
             },
             "OperatorEnum": {
@@ -1153,6 +1536,169 @@
                 "required": [
                     "key"
                 ]
+            },
+            "RolloutPhase": {
+                "type": "object",
+                "description": "Reject misspelled configuration instead of silently dropping it.",
+                "properties": {
+                    "percentage": {
+                        "type": "number",
+                        "format": "double",
+                        "maximum": 100,
+                        "minimum": 0
+                    },
+                    "min_duration_minutes": {
+                        "type": "integer",
+                        "minimum": 0
+                    }
+                },
+                "required": [
+                    "min_duration_minutes",
+                    "percentage"
+                ]
+            },
+            "RolloutPhaseRequest": {
+                "type": "object",
+                "description": "Reject misspelled configuration instead of silently dropping it.",
+                "properties": {
+                    "percentage": {
+                        "type": "number",
+                        "format": "double",
+                        "maximum": 100,
+                        "minimum": 0
+                    },
+                    "min_duration_minutes": {
+                        "type": "integer",
+                        "minimum": 0
+                    }
+                },
+                "required": [
+                    "min_duration_minutes",
+                    "percentage"
+                ]
+            },
+            "RolloutPlan": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "readOnly": true
+                    },
+                    "flag_id": {
+                        "type": "integer",
+                        "readOnly": true
+                    },
+                    "status": {
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/RolloutStatusEnum"
+                            }
+                        ],
+                        "default": "DRAFT"
+                    },
+                    "managed_group_index": {
+                        "type": "integer",
+                        "maximum": 2147483647,
+                        "minimum": 0
+                    },
+                    "phases": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/RolloutPhase"
+                        }
+                    },
+                    "current_phase_index": {
+                        "type": "integer",
+                        "readOnly": true
+                    },
+                    "phase_entered_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "readOnly": true
+                    },
+                    "hold_reason": {
+                        "type": "string",
+                        "readOnly": true
+                    },
+                    "hold_started_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "readOnly": true,
+                        "nullable": true
+                    },
+                    "guardrail": {
+                        "$ref": "#/components/schemas/Guardrail"
+                    },
+                    "recent_samples": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/GuardrailSample"
+                        },
+                        "readOnly": true
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "readOnly": true
+                    }
+                },
+                "required": [
+                    "created_at",
+                    "current_phase_index",
+                    "flag_id",
+                    "guardrail",
+                    "hold_reason",
+                    "hold_started_at",
+                    "id",
+                    "managed_group_index",
+                    "phase_entered_at",
+                    "phases",
+                    "recent_samples"
+                ]
+            },
+            "RolloutPlanRequest": {
+                "type": "object",
+                "properties": {
+                    "status": {
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/RolloutStatusEnum"
+                            }
+                        ],
+                        "default": "DRAFT"
+                    },
+                    "managed_group_index": {
+                        "type": "integer",
+                        "maximum": 2147483647,
+                        "minimum": 0
+                    },
+                    "phases": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/RolloutPhaseRequest"
+                        }
+                    },
+                    "guardrail": {
+                        "$ref": "#/components/schemas/GuardrailRequest"
+                    }
+                },
+                "required": [
+                    "guardrail",
+                    "managed_group_index",
+                    "phases"
+                ]
+            },
+            "RolloutStatusEnum": {
+                "enum": [
+                    "DRAFT",
+                    "ACTIVE",
+                    "HOLDING",
+                    "PAUSED",
+                    "COMPLETED",
+                    "REVERTED"
+                ],
+                "type": "string",
+                "description": "* `DRAFT` - DRAFT\n* `ACTIVE` - ACTIVE\n* `HOLDING` - HOLDING\n* `PAUSED` - PAUSED\n* `COMPLETED` - COMPLETED\n* `REVERTED` - REVERTED"
             },
             "StepEnum": {
                 "enum": [

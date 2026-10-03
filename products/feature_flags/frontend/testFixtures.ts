@@ -19,6 +19,7 @@ export function featureFlagFixture(overrides: Partial<FeatureFlag> = {}): Featur
             },
             payloads: {},
         },
+        rollout_plan_status: null,
         created_by_id: 1,
         created_at: '2026-01-01T00:00:00Z',
         ...overrides,

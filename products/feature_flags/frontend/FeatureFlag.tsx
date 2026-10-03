@@ -5,6 +5,7 @@ import type { ChangeEvent, FormEvent, ReactElement } from 'react'
 import { Button, Card, ErrorBanner, Field, Input, Switch } from '../../../frontend/src/lib/ui'
 import { urls } from '../manifest'
 import { ConditionSetCard } from './components/ConditionSetCard'
+import { RolloutPlanCard } from './components/RolloutPlanCard'
 import { VariantEditor } from './components/VariantEditor'
 import { featureFlagLogic } from './featureFlagLogic'
 import { flagFormErrors, newCondition } from './flagForm'
@@ -171,6 +172,8 @@ export function FeatureFlag({ teamId, flagId }: FeatureFlagProps): ReactElement 
                             error={errors.variants}
                             onChange={setVariants}
                         />
+
+                        {flagId !== 'new' ? <RolloutPlanCard teamId={teamId} flagId={flagId} /> : null}
 
                         <div className="flex justify-end gap-2">
                             <Button type="button" onClick={() => router.actions.push(urls.featureFlags())}>
