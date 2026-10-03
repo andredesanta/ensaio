@@ -128,10 +128,11 @@ SPECTACULAR_SETTINGS = {
     # these as create/update inputs instead of forcing the console to invent
     # values for id, team_id, version, and timestamps.
     "COMPONENT_SPLIT_REQUEST": True,
-    # Trace and /flags responses expose the same kernel reason choices under
-    # different field names. Give that shared set one stable OpenAPI enum name.
+    # Reused choice sets appear through different serializer fields. Stable
+    # names prevent generated TypeScript enums from churning as routes grow.
     "ENUM_NAME_OVERRIDES": {
         "EvaluationReasonEnum": "products.feature_flags.backend.serializers.EVALUATION_REASONS",
+        "RolloutStatusEnum": "products.feature_flags.backend.serializers.ROLLOUT_STATUSES",
     },
 }
 

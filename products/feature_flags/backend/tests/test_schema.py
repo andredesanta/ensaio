@@ -3,7 +3,7 @@ from typing import Any, cast
 from django.test import Client
 
 
-def test_openapi_exposes_public_management_and_trace_contracts_without_authentication(client: Client) -> None:
+def test_openapi_exposes_public_management_trace_and_rollout_contracts_without_authentication(client: Client) -> None:
     response = client.get("/api/schema/?format=json")
 
     assert response.status_code == 200
@@ -13,3 +13,5 @@ def test_openapi_exposes_public_management_and_trace_contracts_without_authentic
     assert "/flags/definitions" in paths
     assert "/api/projects/{team_id}/feature_flags/" in paths
     assert "/api/projects/{team_id}/feature_flags/{id}/trace/" in paths
+    assert "/api/projects/{team_id}/feature_flags/{id}/rollout_plan/" in paths
+    assert "/api/projects/{team_id}/feature_flags/{id}/guardrail_samples/" in paths

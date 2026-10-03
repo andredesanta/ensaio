@@ -6,6 +6,7 @@ from django.contrib.auth.hashers import check_password, make_password
 from django.db import models
 from django.db.models import F, Q
 from django.db.models.base import ModelBase
+from django.utils import timezone
 
 from products.feature_flags.backend.definitions_cache import schedule_definitions_cache_invalidation
 
@@ -117,4 +118,41 @@ class FeatureFlag(models.Model):
             self.refresh_from_db(fields=["version"], using=using)
 
         schedule_definitions_cache_invalidation(self.team_id)
-    
+
+
+class RolloutPlan(models.Model):
+    class Status(models.TextChoices):
+        DRAFT = "DRAFT", "Draft"
+        ACTIVE = "ACTIVE", "Active"
+        HOLDING = "HOLDING", "Holding"
+        PAUSED = "PAUSED", "Paused"
+        COMPLETED = "COMPLETED", "Completed"
+        REVERTED = "REVERTED", "Reverted"
+
+    flag = models.OneToOneField(FeatureFlag, on_delete=models.CASCADE, related_name="rollout_plan")
+    status = models.CharField(max_length=16, choices=Status, default=Status.DRAFT)
+    managed_group_index = models.PositiveIntegerField()
+    phases = models.JSONField()
+    current_phase_index = models.PositiveIntegerField(default=0)
+    phase_entered_at = models.DateTimeField(default=timezone.now)
+    hold_reason = models.CharField(max_length=100, blank=True)
+    hold_started_at = models.DateTimeField(null=True, blank=True)
+    guardrail = models.JSONField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self) -> str:
+        return f"{self.flag.key}: {self.status}"
+
+
+class GuardrailSample(models.Model):
+    plan = models.ForeignKey(RolloutPlan, on_delete=models.CASCADE, related_name="samples")
+    recorded_at = models.DateTimeField(default=timezone.now)
+    value = models.FloatField()
+    sample_count = models.PositiveIntegerField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-recorded_at", "-id"]
+
+    def __str__(self) -> str:
+        return f"{self.plan_id}: {self.value} ({self.sample_count})"

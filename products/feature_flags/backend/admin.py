@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from products.feature_flags.backend.models import FeatureFlag, Team
+from products.feature_flags.backend.models import FeatureFlag, GuardrailSample, RolloutPlan, Team
 
 
 @admin.register(Team)
@@ -16,3 +16,16 @@ class FeatureFlagAdmin(admin.ModelAdmin):  # type: ignore[type-arg]
     list_filter = ("active", "deleted", "team")
     search_fields = ("key", "name")
     readonly_fields = ("version", "created_by", "created_at")
+
+
+@admin.register(RolloutPlan)
+class RolloutPlanAdmin(admin.ModelAdmin):  # type: ignore[type-arg]
+    list_display = ("id", "flag", "status", "current_phase_index", "phase_entered_at")
+    list_filter = ("status",)
+    readonly_fields = ("current_phase_index", "phase_entered_at", "hold_reason", "hold_started_at", "created_at")
+
+
+@admin.register(GuardrailSample)
+class GuardrailSampleAdmin(admin.ModelAdmin):  # type: ignore[type-arg]
+    list_display = ("id", "plan", "recorded_at", "value", "sample_count")
+    readonly_fields = ("created_at",)

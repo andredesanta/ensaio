@@ -3,10 +3,11 @@ from collections.abc import Mapping
 from decimal import Decimal
 from typing import Any, cast
 
+from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
 from ensaio_kernel import EvaluationReason, PropertyOperator
-from products.feature_flags.backend.models import FeatureFlag, Team
+from products.feature_flags.backend.models import FeatureFlag, GuardrailSample, RolloutPlan, Team
 
 SUPPORTED_OPERATORS: tuple[PropertyOperator, ...] = (
     "exact",
@@ -36,6 +37,7 @@ TRACE_STEPS = (
     "variant_override",
     "variant_hash",
 )
+ROLLOUT_STATUSES = tuple(RolloutPlan.Status.values)
 
 
 class StrictSerializer(serializers.Serializer[Any]):
@@ -49,12 +51,16 @@ class StrictSerializer(serializers.Serializer[Any]):
         return cast(dict[str, Any], super().to_internal_value(data))
 
 
-class PercentageField(serializers.FloatField):
+class FiniteFloatField(serializers.FloatField):
     def to_internal_value(self, data: Any) -> float:
         value = super().to_internal_value(data)
         if not math.isfinite(value):
             raise serializers.ValidationError("Must be a finite number.")
         return value
+
+
+class PercentageField(FiniteFloatField):
+    pass
 
 
 class PropertyFilterSerializer(StrictSerializer):
@@ -128,6 +134,7 @@ class FeatureFlagSerializer(serializers.ModelSerializer[FeatureFlag]):
     team_id = serializers.IntegerField(read_only=True)
     created_by_id = serializers.IntegerField(read_only=True, allow_null=True)
     filters = FiltersSerializer(required=False)
+    rollout_plan_status = serializers.SerializerMethodField()
 
     class Meta:
         model = FeatureFlag
@@ -140,10 +147,19 @@ class FeatureFlagSerializer(serializers.ModelSerializer[FeatureFlag]):
             "deleted",
             "version",
             "filters",
+            "rollout_plan_status",
             "created_by_id",
             "created_at",
         )
-        read_only_fields = ("id", "team_id", "deleted", "version", "created_by_id", "created_at")
+        read_only_fields = (
+            "id",
+            "team_id",
+            "deleted",
+            "version",
+            "rollout_plan_status",
+            "created_by_id",
+            "created_at",
+        )
         validators: list[object] = []
 
     def validate(self, attrs: dict[str, Any]) -> dict[str, Any]:
@@ -162,6 +178,13 @@ class FeatureFlagSerializer(serializers.ModelSerializer[FeatureFlag]):
         if matching_flags.exists():
             raise serializers.ValidationError({"key": "A live flag with this key already exists in this team."})
         return attrs
+
+    @extend_schema_field(serializers.ChoiceField(choices=ROLLOUT_STATUSES, allow_null=True))
+    def get_rollout_plan_status(self, instance: FeatureFlag) -> str | None:
+        try:
+            return instance.rollout_plan.status
+        except RolloutPlan.DoesNotExist:
+            return None
 
 
 class TraceRequestSerializer(StrictSerializer):
@@ -244,3 +267,106 @@ class LocalEvaluationFlagSerializer(serializers.Serializer[Any]):
 
 class DefinitionsResponseSerializer(serializers.Serializer[Any]):
     flags = LocalEvaluationFlagSerializer(many=True)
+
+
+class RolloutPhaseSerializer(StrictSerializer):
+    percentage = PercentageField(min_value=0, max_value=100)
+    min_duration_minutes = serializers.IntegerField(min_value=0)
+
+
+class GuardrailSerializer(StrictSerializer):
+    name = serializers.CharField(allow_blank=False, max_length=100)
+    comparison = serializers.ChoiceField(choices=("lt", "lte", "gt", "gte"))
+    threshold = FiniteFloatField()
+    window_minutes = serializers.IntegerField(min_value=1)
+    min_samples = serializers.IntegerField(min_value=1)
+    max_hold_minutes = serializers.IntegerField(min_value=1)
+
+
+class GuardrailSampleSerializer(serializers.ModelSerializer[GuardrailSample]):
+    plan_id = serializers.IntegerField(read_only=True)
+
+    class Meta:
+        model = GuardrailSample
+        fields = ("id", "plan_id", "recorded_at", "value", "sample_count", "created_at")
+        read_only_fields = ("id", "plan_id", "recorded_at", "created_at")
+
+    def validate_value(self, value: float) -> float:
+        if not math.isfinite(value):
+            raise serializers.ValidationError("Must be a finite number.")
+        return value
+
+
+class RolloutPlanSerializer(serializers.ModelSerializer[RolloutPlan]):
+    flag_id = serializers.IntegerField(read_only=True)
+    status = serializers.ChoiceField(choices=ROLLOUT_STATUSES, default=RolloutPlan.Status.DRAFT)
+    phases = RolloutPhaseSerializer(many=True, allow_empty=False)
+    guardrail = GuardrailSerializer()
+    recent_samples = serializers.SerializerMethodField()
+
+    class Meta:
+        model = RolloutPlan
+        fields = (
+            "id",
+            "flag_id",
+            "status",
+            "managed_group_index",
+            "phases",
+            "current_phase_index",
+            "phase_entered_at",
+            "hold_reason",
+            "hold_started_at",
+            "guardrail",
+            "recent_samples",
+            "created_at",
+        )
+        read_only_fields = (
+            "id",
+            "flag_id",
+            "current_phase_index",
+            "phase_entered_at",
+            "hold_reason",
+            "hold_started_at",
+            "recent_samples",
+            "created_at",
+        )
+
+    def validate_phases(self, phases: list[dict[str, Any]]) -> list[dict[str, Any]]:
+        percentages = [float(phase["percentage"]) for phase in phases]
+        if any(current >= following for current, following in zip(percentages, percentages[1:], strict=False)):
+            raise serializers.ValidationError("Phase percentages must be strictly increasing.")
+        return phases
+
+    def validate_status(self, value: str) -> str:
+        if value in {RolloutPlan.Status.HOLDING, RolloutPlan.Status.COMPLETED}:
+            raise serializers.ValidationError("This status is controlled by tick_rollouts.")
+        return value
+
+    def validate(self, attrs: dict[str, Any]) -> dict[str, Any]:
+        flag = self.context.get("flag")
+        if not isinstance(flag, FeatureFlag):
+            return attrs
+
+        instance = self.instance if isinstance(self.instance, RolloutPlan) else None
+        managed_group_index = int(
+            attrs.get(
+                "managed_group_index",
+                instance.managed_group_index if instance is not None else 0,
+            )
+        )
+        groups = flag.filters.get("groups") if isinstance(flag.filters, dict) else None
+        if not isinstance(groups, list) or managed_group_index >= len(groups):
+            raise serializers.ValidationError(
+                {"managed_group_index": "Must identify an existing entry in the flag's filters.groups."}
+            )
+
+        phases = attrs.get("phases", instance.phases if instance is not None else [])
+        current_phase_index = instance.current_phase_index if instance is not None else 0
+        if current_phase_index >= len(phases):
+            raise serializers.ValidationError({"phases": "Must retain the rollout's current phase index."})
+        return attrs
+
+    @extend_schema_field(GuardrailSampleSerializer(many=True))
+    def get_recent_samples(self, instance: RolloutPlan) -> list[dict[str, Any]]:
+        samples = instance.samples.order_by("-recorded_at", "-id")[:5]
+        return cast(list[dict[str, Any]], GuardrailSampleSerializer(samples, many=True).data)
