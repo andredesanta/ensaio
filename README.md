@@ -2,7 +2,7 @@
 
 A small feature-flag platform, built to learn the same stack PostHog uses for Feature Flags. The name is Portuguese for "trial" or "rehearsal". Ensaio is an original project with no affiliation to PostHog or any other company, and it is built from public information only.
 
-**What works today:** the M0 scaffold and the pure M1 evaluation kernel. Postgres starts, Django answers `/healthz`, and the React console boots to an empty page. `ensaio_kernel` evaluates boolean and multivariate definitions without Django or I/O, uses PostHog-compatible SHA-1 bucketing, supports the scoped property-operator set, and returns a decision trace. Fifteen golden vectors and PostHog's published Rust hash values protect the contract. The Django flag API and console scenes do not exist yet.
+**What works today:** the M0 scaffold, pure M1 evaluation kernel, M2 management API, and M3 React/Kea console. Authenticated staff users can create, list, edit, soft-delete, and trace project-scoped feature flags through Django REST Framework. The browser console supports search, active toggles, condition and variant editing, and ordered decision traces. Frontend API types are generated from the committed OpenAPI contract.
 
 ## Quickstart
 
@@ -13,14 +13,16 @@ Requirements: Docker, uv, Node 24, and Corepack (ships with Node; it provides pn
 ./bin/start
 ```
 
-- Console: http://127.0.0.1:5173 — empty page. That is the milestone.
+- Console: http://127.0.0.1:5173/feature_flags — list, create, edit, and trace flags for the team configured on the HTML shell.
 - API liveness: http://127.0.0.1:8000/healthz — responds `ok` and does not touch the database.
-- OpenAPI (empty until the flag API exists): http://127.0.0.1:8000/api/schema/
+- Management API: http://127.0.0.1:8000/api/projects/1/feature_flags/ — session-authenticated.
+- OpenAPI: http://127.0.0.1:8000/api/schema/ — committed at `frontend/openapi.json`.
 
 Postgres is the only container (`postgres:15.12-alpine` on port 5432). Django and Vite run on the host so edits reload without an image rebuild.
 
 ```bash
 ./bin/test   # ruff, mypy, tach, pytest (including kernel vectors), tsc, oxlint, oxfmt, jest
+cd frontend && corepack pnpm run test:smoke   # Playwright create-and-trace flow
 ```
 
 Conventions for people and agents: [`AGENTS.md`](AGENTS.md).

@@ -4,4 +4,4 @@ cd "$(dirname "$0")/.."
 
 uv run ruff check . --fix
 uv run ruff format .
-(cd frontend && corepack pnpm exec oxlint --fix && corepack pnpm exec oxfmt .)
+(cd frontend && corepack pnpm run lint:fix && corepack pnpm run format)

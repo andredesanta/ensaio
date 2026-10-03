@@ -16,7 +16,7 @@ uv run pytest
 (
     cd frontend
     corepack pnpm exec tsc --noEmit
-    corepack pnpm exec oxlint
-    corepack pnpm exec oxfmt --check .
+    corepack pnpm run lint
+    corepack pnpm run format:check
     corepack pnpm test
 )

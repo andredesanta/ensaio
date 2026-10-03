@@ -17,6 +17,25 @@ Ensaio is a learning project: a small feature-flag platform shaped like PostHog'
 
 ```text
 packages/ensaio_kernel/     pure evaluation. no Django or I/O
-products/feature_flags/     one product: backend/ (Django app), frontend/ (M3), manifest.tsx
+products/feature_flags/     one product: backend/ (Django app), frontend/, manifest.tsx
 ensaio_project/             settings, root URLs
 frontend/                   Vite shell. Product UI does not go here
+
+The Django app label is `feature_flags`, not `backend`. The Python path is
+`products.feature_flags.backend`, and the default label would collide with the next product.
+
+## Commands to run before you finish
+
+```bash
+./bin/test
+```
+
+That is: `ruff check`, `ruff format --check`, `mypy`, `tach check`, `tach check-external`, OpenAPI drift, `pytest`, `tsc --noEmit`, `oxlint`, `oxfmt --check`, `jest`.
+
+Day to day: `./bin/setup` once, `./bin/start` to boot Postgres, Django on port 8000, and the console on port 5173.
+
+After changing a serializer or Kea logic, regenerate frontend artifacts:
+
+```bash
+./bin/generate-schema
+cd frontend && corepack pnpm run generate

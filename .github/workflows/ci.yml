@@ -50,10 +50,17 @@ jobs:
       - working-directory: frontend
         run: pnpm install --frozen-lockfile
       - working-directory: frontend
+        run: pnpm run generate
+      - run: git diff --exit-code
+      - working-directory: frontend
         run: pnpm exec tsc --noEmit
       - working-directory: frontend
-        run: pnpm exec oxlint
+        run: pnpm run lint
       - working-directory: frontend
-        run: pnpm exec oxfmt --check .
+        run: pnpm run format:check
       - working-directory: frontend
         run: pnpm test
+      - working-directory: frontend
+        run: pnpm exec playwright install --with-deps chromium
+      - working-directory: frontend
+        run: pnpm run test:smoke
