@@ -1,15 +1,15 @@
 import { resetContext } from 'kea'
+import { formsPlugin } from 'kea-forms'
+import { loadersPlugin } from 'kea-loaders'
+import { routerPlugin } from 'kea-router'
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 
 import { App } from './App'
 import './index.css'
 
-// Kea keeps feature state. React only renders it. resetContext() builds the
-// store once, before any component mounts. M3 will pass kea-router and
-// kea-loaders in `plugins`.
 resetContext({
-    plugins: [],
+    plugins: [loadersPlugin(), formsPlugin(), routerPlugin()],
 })
 
 const rootElement = document.getElementById('root')
