@@ -6,15 +6,9 @@
  * OpenAPI spec version: 0.0.0
  */
 import type { EvaluationReasonEnum } from './evaluationReasonEnum'
-import type { TraceStep } from './traceStep'
 
-export interface EvaluationResult {
-    enabled: boolean
-    /** @nullable */
-    variant: string | null
-    payload: unknown | null
-    reason: EvaluationReasonEnum
+export interface FlagEvaluationReason {
+    code: EvaluationReasonEnum
     /** @nullable */
     condition_index: number | null
-    trace: TraceStep[]
 }

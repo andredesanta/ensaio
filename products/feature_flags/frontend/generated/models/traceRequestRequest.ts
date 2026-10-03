@@ -5,13 +5,13 @@
  * Feature flag management API. Types for the console are generated from this schema.
  * OpenAPI spec version: 0.0.0
  */
-import type { TraceRequestRequestProperties } from './traceRequestRequestProperties';
+import type { TraceRequestRequestProperties } from './traceRequestRequestProperties'
 
 /**
  * Reject misspelled configuration instead of silently dropping it.
  */
 export interface TraceRequestRequest {
-  /** @maxLength 400 */
-  distinct_id: string;
-  properties?: TraceRequestRequestProperties;
+    /** @maxLength 400 */
+    distinct_id: string
+    properties?: TraceRequestRequestProperties
 }

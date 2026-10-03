@@ -5,16 +5,16 @@
  * Feature flag management API. Types for the console are generated from this schema.
  * OpenAPI spec version: 0.0.0
  */
-import type { FiltersRequest } from './filtersRequest';
+import type { FiltersRequest } from './filtersRequest'
 
 export interface FeatureFlagRequest {
-  /**
+    /**
      * @minLength 1
      * @maxLength 400
      * @pattern ^[-a-zA-Z0-9_]+$
      */
-  key: string;
-  name?: string;
-  active?: boolean;
-  filters?: FiltersRequest;
+    key: string
+    name?: string
+    active?: boolean
+    filters?: FiltersRequest
 }

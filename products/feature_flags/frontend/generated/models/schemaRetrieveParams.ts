@@ -5,10 +5,10 @@
  * Feature flag management API. Types for the console are generated from this schema.
  * OpenAPI spec version: 0.0.0
  */
-import type { SchemaRetrieveFormat } from './schemaRetrieveFormat';
-import type { SchemaRetrieveLang } from './schemaRetrieveLang';
+import type { SchemaRetrieveFormat } from './schemaRetrieveFormat'
+import type { SchemaRetrieveLang } from './schemaRetrieveLang'
 
 export type SchemaRetrieveParams = {
-format?: SchemaRetrieveFormat;
-lang?: SchemaRetrieveLang;
-};
+    format?: SchemaRetrieveFormat
+    lang?: SchemaRetrieveLang
+}

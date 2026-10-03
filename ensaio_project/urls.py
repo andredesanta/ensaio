@@ -7,6 +7,7 @@ from ensaio_project.schema import SchemaView
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("healthz", healthz, name="healthz"),
+    path("", include("products.feature_flags.backend.public_urls")),
     path("api/schema/", SchemaView.as_view(), name="schema"),
     path("api/projects/<int:team_id>/", include("products.feature_flags.backend.urls")),
 ]

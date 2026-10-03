@@ -6,325 +6,279 @@
  * OpenAPI spec version: 0.0.0
  */
 import type {
-  EvaluationResult,
-  FeatureFlag,
-  FeatureFlagRequest,
-  PatchedFeatureFlagRequest,
-  SchemaRetrieve200Four,
-  SchemaRetrieve200One,
-  SchemaRetrieve200Three,
-  SchemaRetrieve200Two,
-  SchemaRetrieveParams,
-  TraceRequestRequest
-} from './models';
+    DefinitionsResponse,
+    EvaluationResult,
+    FeatureFlag,
+    FeatureFlagRequest,
+    FlagsCreateParams,
+    FlagsRequestRequest,
+    FlagsResponse,
+    PatchedFeatureFlagRequest,
+    SchemaRetrieve200Four,
+    SchemaRetrieve200One,
+    SchemaRetrieve200Three,
+    SchemaRetrieve200Two,
+    SchemaRetrieveParams,
+    TraceRequestRequest,
+} from './models'
 
-import { apiClient } from '../apiClient';
+import { apiClient } from '../apiClient'
 export type projectsFeatureFlagsListResponse200 = {
-  data: FeatureFlag[]
-  status: 200
+    data: FeatureFlag[]
+    status: 200
 }
 
-export type projectsFeatureFlagsListResponseSuccess = (projectsFeatureFlagsListResponse200) & {
-  headers: Headers;
-};
-;
+export type projectsFeatureFlagsListResponseSuccess = projectsFeatureFlagsListResponse200 & {
+    headers: Headers
+}
 
-export type projectsFeatureFlagsListResponse = (projectsFeatureFlagsListResponseSuccess)
+export type projectsFeatureFlagsListResponse = projectsFeatureFlagsListResponseSuccess
 
-export const getProjectsFeatureFlagsListUrl = (teamId: number,) => {
-
-
-
-
-  return `/api/projects/${teamId}/feature_flags/`
+export const getProjectsFeatureFlagsListUrl = (teamId: number) => {
+    return `/api/projects/${teamId}/feature_flags/`
 }
 
 /**
  * Make the project id in the URL an unavoidable queryset boundary.
  */
-export const projectsFeatureFlagsList = async (teamId: number, options?: RequestInit): Promise<projectsFeatureFlagsListResponse> => {
-
-  return apiClient<projectsFeatureFlagsListResponse>(getProjectsFeatureFlagsListUrl(teamId),
-  {
-    ...options,
-    method: 'GET'
-
-
-  }
-);}
-
-
+export const projectsFeatureFlagsList = async (
+    teamId: number,
+    options?: RequestInit
+): Promise<projectsFeatureFlagsListResponse> => {
+    return apiClient<projectsFeatureFlagsListResponse>(getProjectsFeatureFlagsListUrl(teamId), {
+        ...options,
+        method: 'GET',
+    })
+}
 
 export type projectsFeatureFlagsCreateResponse201 = {
-  data: FeatureFlag
-  status: 201
+    data: FeatureFlag
+    status: 201
 }
 
-export type projectsFeatureFlagsCreateResponseSuccess = (projectsFeatureFlagsCreateResponse201) & {
-  headers: Headers;
-};
-;
+export type projectsFeatureFlagsCreateResponseSuccess = projectsFeatureFlagsCreateResponse201 & {
+    headers: Headers
+}
 
-export type projectsFeatureFlagsCreateResponse = (projectsFeatureFlagsCreateResponseSuccess)
+export type projectsFeatureFlagsCreateResponse = projectsFeatureFlagsCreateResponseSuccess
 
-export const getProjectsFeatureFlagsCreateUrl = (teamId: number,) => {
-
-
-
-
-  return `/api/projects/${teamId}/feature_flags/`
+export const getProjectsFeatureFlagsCreateUrl = (teamId: number) => {
+    return `/api/projects/${teamId}/feature_flags/`
 }
 
 /**
  * Make the project id in the URL an unavoidable queryset boundary.
  */
-export const projectsFeatureFlagsCreate = async (teamId: number,
-    featureFlagRequest: FeatureFlagRequest, options?: RequestInit): Promise<projectsFeatureFlagsCreateResponse> => {
-
-  return apiClient<projectsFeatureFlagsCreateResponse>(getProjectsFeatureFlagsCreateUrl(teamId),
-  {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(featureFlagRequest)
-  }
-);}
-
-
+export const projectsFeatureFlagsCreate = async (
+    teamId: number,
+    featureFlagRequest: FeatureFlagRequest,
+    options?: RequestInit
+): Promise<projectsFeatureFlagsCreateResponse> => {
+    return apiClient<projectsFeatureFlagsCreateResponse>(getProjectsFeatureFlagsCreateUrl(teamId), {
+        ...options,
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...options?.headers },
+        body: JSON.stringify(featureFlagRequest),
+    })
+}
 
 export type projectsFeatureFlagsRetrieveResponse200 = {
-  data: FeatureFlag
-  status: 200
+    data: FeatureFlag
+    status: 200
 }
 
-export type projectsFeatureFlagsRetrieveResponseSuccess = (projectsFeatureFlagsRetrieveResponse200) & {
-  headers: Headers;
-};
-;
+export type projectsFeatureFlagsRetrieveResponseSuccess = projectsFeatureFlagsRetrieveResponse200 & {
+    headers: Headers
+}
 
-export type projectsFeatureFlagsRetrieveResponse = (projectsFeatureFlagsRetrieveResponseSuccess)
+export type projectsFeatureFlagsRetrieveResponse = projectsFeatureFlagsRetrieveResponseSuccess
 
-export const getProjectsFeatureFlagsRetrieveUrl = (teamId: number,
-    id: number,) => {
-
-
-
-
-  return `/api/projects/${teamId}/feature_flags/${id}/`
+export const getProjectsFeatureFlagsRetrieveUrl = (teamId: number, id: number) => {
+    return `/api/projects/${teamId}/feature_flags/${id}/`
 }
 
 /**
  * Make the project id in the URL an unavoidable queryset boundary.
  */
-export const projectsFeatureFlagsRetrieve = async (teamId: number,
-    id: number, options?: RequestInit): Promise<projectsFeatureFlagsRetrieveResponse> => {
-
-  return apiClient<projectsFeatureFlagsRetrieveResponse>(getProjectsFeatureFlagsRetrieveUrl(teamId,id),
-  {
-    ...options,
-    method: 'GET'
-
-
-  }
-);}
-
-
+export const projectsFeatureFlagsRetrieve = async (
+    teamId: number,
+    id: number,
+    options?: RequestInit
+): Promise<projectsFeatureFlagsRetrieveResponse> => {
+    return apiClient<projectsFeatureFlagsRetrieveResponse>(getProjectsFeatureFlagsRetrieveUrl(teamId, id), {
+        ...options,
+        method: 'GET',
+    })
+}
 
 export type projectsFeatureFlagsUpdateResponse200 = {
-  data: FeatureFlag
-  status: 200
+    data: FeatureFlag
+    status: 200
 }
 
-export type projectsFeatureFlagsUpdateResponseSuccess = (projectsFeatureFlagsUpdateResponse200) & {
-  headers: Headers;
-};
-;
+export type projectsFeatureFlagsUpdateResponseSuccess = projectsFeatureFlagsUpdateResponse200 & {
+    headers: Headers
+}
 
-export type projectsFeatureFlagsUpdateResponse = (projectsFeatureFlagsUpdateResponseSuccess)
+export type projectsFeatureFlagsUpdateResponse = projectsFeatureFlagsUpdateResponseSuccess
 
-export const getProjectsFeatureFlagsUpdateUrl = (teamId: number,
-    id: number,) => {
-
-
-
-
-  return `/api/projects/${teamId}/feature_flags/${id}/`
+export const getProjectsFeatureFlagsUpdateUrl = (teamId: number, id: number) => {
+    return `/api/projects/${teamId}/feature_flags/${id}/`
 }
 
 /**
  * Make the project id in the URL an unavoidable queryset boundary.
  */
-export const projectsFeatureFlagsUpdate = async (teamId: number,
+export const projectsFeatureFlagsUpdate = async (
+    teamId: number,
     id: number,
-    featureFlagRequest: FeatureFlagRequest, options?: RequestInit): Promise<projectsFeatureFlagsUpdateResponse> => {
-
-  return apiClient<projectsFeatureFlagsUpdateResponse>(getProjectsFeatureFlagsUpdateUrl(teamId,id),
-  {
-    ...options,
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(featureFlagRequest)
-  }
-);}
-
-
+    featureFlagRequest: FeatureFlagRequest,
+    options?: RequestInit
+): Promise<projectsFeatureFlagsUpdateResponse> => {
+    return apiClient<projectsFeatureFlagsUpdateResponse>(getProjectsFeatureFlagsUpdateUrl(teamId, id), {
+        ...options,
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', ...options?.headers },
+        body: JSON.stringify(featureFlagRequest),
+    })
+}
 
 export type projectsFeatureFlagsPartialUpdateResponse200 = {
-  data: FeatureFlag
-  status: 200
+    data: FeatureFlag
+    status: 200
 }
 
-export type projectsFeatureFlagsPartialUpdateResponseSuccess = (projectsFeatureFlagsPartialUpdateResponse200) & {
-  headers: Headers;
-};
-;
+export type projectsFeatureFlagsPartialUpdateResponseSuccess = projectsFeatureFlagsPartialUpdateResponse200 & {
+    headers: Headers
+}
 
-export type projectsFeatureFlagsPartialUpdateResponse = (projectsFeatureFlagsPartialUpdateResponseSuccess)
+export type projectsFeatureFlagsPartialUpdateResponse = projectsFeatureFlagsPartialUpdateResponseSuccess
 
-export const getProjectsFeatureFlagsPartialUpdateUrl = (teamId: number,
-    id: number,) => {
-
-
-
-
-  return `/api/projects/${teamId}/feature_flags/${id}/`
+export const getProjectsFeatureFlagsPartialUpdateUrl = (teamId: number, id: number) => {
+    return `/api/projects/${teamId}/feature_flags/${id}/`
 }
 
 /**
  * Make the project id in the URL an unavoidable queryset boundary.
  */
-export const projectsFeatureFlagsPartialUpdate = async (teamId: number,
+export const projectsFeatureFlagsPartialUpdate = async (
+    teamId: number,
     id: number,
-    patchedFeatureFlagRequest?: PatchedFeatureFlagRequest, options?: RequestInit): Promise<projectsFeatureFlagsPartialUpdateResponse> => {
-
-  return apiClient<projectsFeatureFlagsPartialUpdateResponse>(getProjectsFeatureFlagsPartialUpdateUrl(teamId,id),
-  {
-    ...options,
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(patchedFeatureFlagRequest)
-  }
-);}
-
-
+    patchedFeatureFlagRequest?: PatchedFeatureFlagRequest,
+    options?: RequestInit
+): Promise<projectsFeatureFlagsPartialUpdateResponse> => {
+    return apiClient<projectsFeatureFlagsPartialUpdateResponse>(getProjectsFeatureFlagsPartialUpdateUrl(teamId, id), {
+        ...options,
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', ...options?.headers },
+        body: JSON.stringify(patchedFeatureFlagRequest),
+    })
+}
 
 export type projectsFeatureFlagsDestroyResponse204 = {
-  data: void
-  status: 204
+    data: void
+    status: 204
 }
 
-export type projectsFeatureFlagsDestroyResponseSuccess = (projectsFeatureFlagsDestroyResponse204) & {
-  headers: Headers;
-};
-;
+export type projectsFeatureFlagsDestroyResponseSuccess = projectsFeatureFlagsDestroyResponse204 & {
+    headers: Headers
+}
 
-export type projectsFeatureFlagsDestroyResponse = (projectsFeatureFlagsDestroyResponseSuccess)
+export type projectsFeatureFlagsDestroyResponse = projectsFeatureFlagsDestroyResponseSuccess
 
-export const getProjectsFeatureFlagsDestroyUrl = (teamId: number,
-    id: number,) => {
-
-
-
-
-  return `/api/projects/${teamId}/feature_flags/${id}/`
+export const getProjectsFeatureFlagsDestroyUrl = (teamId: number, id: number) => {
+    return `/api/projects/${teamId}/feature_flags/${id}/`
 }
 
 /**
  * Make the project id in the URL an unavoidable queryset boundary.
  */
-export const projectsFeatureFlagsDestroy = async (teamId: number,
-    id: number, options?: RequestInit): Promise<projectsFeatureFlagsDestroyResponse> => {
-
-  return apiClient<projectsFeatureFlagsDestroyResponse>(getProjectsFeatureFlagsDestroyUrl(teamId,id),
-  {
-    ...options,
-    method: 'DELETE'
-
-
-  }
-);}
-
-
+export const projectsFeatureFlagsDestroy = async (
+    teamId: number,
+    id: number,
+    options?: RequestInit
+): Promise<projectsFeatureFlagsDestroyResponse> => {
+    return apiClient<projectsFeatureFlagsDestroyResponse>(getProjectsFeatureFlagsDestroyUrl(teamId, id), {
+        ...options,
+        method: 'DELETE',
+    })
+}
 
 export type projectsFeatureFlagsTraceCreateResponse200 = {
-  data: EvaluationResult
-  status: 200
+    data: EvaluationResult
+    status: 200
 }
 
-export type projectsFeatureFlagsTraceCreateResponseSuccess = (projectsFeatureFlagsTraceCreateResponse200) & {
-  headers: Headers;
-};
-;
+export type projectsFeatureFlagsTraceCreateResponseSuccess = projectsFeatureFlagsTraceCreateResponse200 & {
+    headers: Headers
+}
 
-export type projectsFeatureFlagsTraceCreateResponse = (projectsFeatureFlagsTraceCreateResponseSuccess)
+export type projectsFeatureFlagsTraceCreateResponse = projectsFeatureFlagsTraceCreateResponseSuccess
 
-export const getProjectsFeatureFlagsTraceCreateUrl = (teamId: number,
-    id: number,) => {
-
-
-
-
-  return `/api/projects/${teamId}/feature_flags/${id}/trace/`
+export const getProjectsFeatureFlagsTraceCreateUrl = (teamId: number, id: number) => {
+    return `/api/projects/${teamId}/feature_flags/${id}/trace/`
 }
 
 /**
  * Make the project id in the URL an unavoidable queryset boundary.
  */
-export const projectsFeatureFlagsTraceCreate = async (teamId: number,
+export const projectsFeatureFlagsTraceCreate = async (
+    teamId: number,
     id: number,
-    traceRequestRequest: TraceRequestRequest, options?: RequestInit): Promise<projectsFeatureFlagsTraceCreateResponse> => {
-
-  return apiClient<projectsFeatureFlagsTraceCreateResponse>(getProjectsFeatureFlagsTraceCreateUrl(teamId,id),
-  {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(traceRequestRequest)
-  }
-);}
-
-
+    traceRequestRequest: TraceRequestRequest,
+    options?: RequestInit
+): Promise<projectsFeatureFlagsTraceCreateResponse> => {
+    return apiClient<projectsFeatureFlagsTraceCreateResponse>(getProjectsFeatureFlagsTraceCreateUrl(teamId, id), {
+        ...options,
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...options?.headers },
+        body: JSON.stringify(traceRequestRequest),
+    })
+}
 
 export type schemaRetrieveResponse200ApplicationVndOaiOpenapi = {
-  data: SchemaRetrieve200One
-  status: 200
+    data: SchemaRetrieve200One
+    status: 200
 }
 
 export type schemaRetrieveResponse200ApplicationYaml = {
-  data: SchemaRetrieve200Two
-  status: 200
+    data: SchemaRetrieve200Two
+    status: 200
 }
 
 export type schemaRetrieveResponse200ApplicationVndOaiOpenapiJson = {
-  data: SchemaRetrieve200Three
-  status: 200
+    data: SchemaRetrieve200Three
+    status: 200
 }
 
 export type schemaRetrieveResponse200ApplicationJson = {
-  data: SchemaRetrieve200Four
-  status: 200
+    data: SchemaRetrieve200Four
+    status: 200
 }
 
-export type schemaRetrieveResponseSuccess = (schemaRetrieveResponse200ApplicationVndOaiOpenapi | schemaRetrieveResponse200ApplicationYaml | schemaRetrieveResponse200ApplicationVndOaiOpenapiJson | schemaRetrieveResponse200ApplicationJson) & {
-  headers: Headers;
-};
-;
+export type schemaRetrieveResponseSuccess = (
+    | schemaRetrieveResponse200ApplicationVndOaiOpenapi
+    | schemaRetrieveResponse200ApplicationYaml
+    | schemaRetrieveResponse200ApplicationVndOaiOpenapiJson
+    | schemaRetrieveResponse200ApplicationJson
+) & {
+    headers: Headers
+}
 
-export type schemaRetrieveResponse = (schemaRetrieveResponseSuccess)
+export type schemaRetrieveResponse = schemaRetrieveResponseSuccess
 
-export const getSchemaRetrieveUrl = (params?: SchemaRetrieveParams,) => {
-  const normalizedParams = new URLSearchParams();
+export const getSchemaRetrieveUrl = (params?: SchemaRetrieveParams) => {
+    const normalizedParams = new URLSearchParams()
 
-  Object.entries(params || {}).forEach(([key, value]) => {
+    Object.entries(params || {}).forEach(([key, value]) => {
+        if (value !== undefined) {
+            normalizedParams.append(key, value === null ? 'null' : String(value))
+        }
+    })
 
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : String(value))
-    }
-  });
+    const stringifiedParams = normalizedParams.toString()
 
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0 ? `/api/schema/?${stringifiedParams}` : `/api/schema/`
+    return stringifiedParams.length > 0 ? `/api/schema/?${stringifiedParams}` : `/api/schema/`
 }
 
 /**
@@ -333,13 +287,103 @@ export const getSchemaRetrieveUrl = (params?: SchemaRetrieveParams,) => {
  * Public on purpose: it describes API shapes but serves no flag data. The
  * management API operations it documents remain session-authenticated.
  */
-export const schemaRetrieve = async (params?: SchemaRetrieveParams, options?: RequestInit): Promise<schemaRetrieveResponse> => {
+export const schemaRetrieve = async (
+    params?: SchemaRetrieveParams,
+    options?: RequestInit
+): Promise<schemaRetrieveResponse> => {
+    return apiClient<schemaRetrieveResponse>(getSchemaRetrieveUrl(params), {
+        ...options,
+        method: 'GET',
+    })
+}
 
-  return apiClient<schemaRetrieveResponse>(getSchemaRetrieveUrl(params),
-  {
-    ...options,
-    method: 'GET'
+export type flagsCreateResponse200 = {
+    data: FlagsResponse
+    status: 200
+}
 
+export type flagsCreateResponse400 = {
+    data: void
+    status: 400
+}
 
-  }
-);}
+export type flagsCreateResponse401 = {
+    data: void
+    status: 401
+}
+
+export type flagsCreateResponseSuccess = flagsCreateResponse200 & {
+    headers: Headers
+}
+export type flagsCreateResponseError = (flagsCreateResponse400 | flagsCreateResponse401) & {
+    headers: Headers
+}
+
+export type flagsCreateResponse = flagsCreateResponseSuccess | flagsCreateResponseError
+
+export const getFlagsCreateUrl = (params: FlagsCreateParams) => {
+    const normalizedParams = new URLSearchParams()
+
+    Object.entries(params || {}).forEach(([key, value]) => {
+        if (value !== undefined) {
+            normalizedParams.append(key, value === null ? 'null' : String(value))
+        }
+    })
+
+    const stringifiedParams = normalizedParams.toString()
+
+    return stringifiedParams.length > 0 ? `/flags/?${stringifiedParams}` : `/flags/`
+}
+
+export const flagsCreate = async (
+    flagsRequestRequest: FlagsRequestRequest,
+    params: FlagsCreateParams,
+    options?: RequestInit
+): Promise<flagsCreateResponse> => {
+    return apiClient<flagsCreateResponse>(getFlagsCreateUrl(params), {
+        ...options,
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...options?.headers },
+        body: JSON.stringify(flagsRequestRequest),
+    })
+}
+
+export type flagsDefinitionsRetrieveResponse200 = {
+    data: DefinitionsResponse
+    status: 200
+}
+
+export type flagsDefinitionsRetrieveResponse304 = {
+    data: void
+    status: 304
+}
+
+export type flagsDefinitionsRetrieveResponse401 = {
+    data: void
+    status: 401
+}
+
+export type flagsDefinitionsRetrieveResponseSuccess = flagsDefinitionsRetrieveResponse200 & {
+    headers: Headers
+}
+export type flagsDefinitionsRetrieveResponseError = (
+    | flagsDefinitionsRetrieveResponse304
+    | flagsDefinitionsRetrieveResponse401
+) & {
+    headers: Headers
+}
+
+export type flagsDefinitionsRetrieveResponse =
+    | flagsDefinitionsRetrieveResponseSuccess
+    | flagsDefinitionsRetrieveResponseError
+
+export const getFlagsDefinitionsRetrieveUrl = () => {
+    return `/flags/definitions`
+}
+
+export const flagsDefinitionsRetrieve = async (options?: RequestInit): Promise<flagsDefinitionsRetrieveResponse> => {
+    return apiClient<flagsDefinitionsRetrieveResponse>(getFlagsDefinitionsRetrieveUrl(), {
+        ...options,
+        method: 'GET',
+    })
+}

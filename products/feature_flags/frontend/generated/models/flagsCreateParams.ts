@@ -6,4 +6,9 @@
  * OpenAPI spec version: 0.0.0
  */
 
-export type SchemaRetrieve200Three = { [key: string]: unknown }
+export type FlagsCreateParams = {
+    /**
+     * Ensaio implements only PostHog's version 2 response shape.
+     */
+    v: string
+}

@@ -533,6 +533,113 @@
                     }
                 }
             }
+        },
+        "/flags/": {
+            "post": {
+                "operationId": "flags_create",
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "v",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "Ensaio implements only PostHog's version 2 response shape.",
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "flags"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/FlagsRequestRequest"
+                            }
+                        },
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/FlagsRequestRequest"
+                            }
+                        },
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/FlagsRequestRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "security": [
+                    {}
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/FlagsResponse"
+                                }
+                            }
+                        },
+                        "description": ""
+                    },
+                    "400": {
+                        "description": "Invalid version or request body."
+                    },
+                    "401": {
+                        "description": "Unknown public project token."
+                    }
+                }
+            }
+        },
+        "/flags/definitions": {
+            "get": {
+                "operationId": "flags_definitions_retrieve",
+                "parameters": [
+                    {
+                        "in": "header",
+                        "name": "Authorization",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "Bearer token using the team's ens_sec_ definitions secret.",
+                        "required": true
+                    },
+                    {
+                        "in": "header",
+                        "name": "If-None-Match",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "tags": [
+                    "flags"
+                ],
+                "security": [
+                    {}
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DefinitionsResponse"
+                                }
+                            }
+                        },
+                        "description": ""
+                    },
+                    "304": {
+                        "description": "Definitions have not changed."
+                    },
+                    "401": {
+                        "description": "Missing or invalid definitions secret."
+                    }
+                }
+            }
         }
     },
     "components": {
@@ -590,6 +697,30 @@
                     "properties"
                 ]
             },
+            "DefinitionsResponse": {
+                "type": "object",
+                "properties": {
+                    "flags": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/LocalEvaluationFlag"
+                        }
+                    }
+                },
+                "required": [
+                    "flags"
+                ]
+            },
+            "EvaluationReasonEnum": {
+                "enum": [
+                    "condition_match",
+                    "no_condition_match",
+                    "out_of_rollout_bound",
+                    "flag_disabled"
+                ],
+                "type": "string",
+                "description": "* `condition_match` - condition_match\n* `no_condition_match` - no_condition_match\n* `out_of_rollout_bound` - out_of_rollout_bound\n* `flag_disabled` - flag_disabled"
+            },
             "EvaluationResult": {
                 "type": "object",
                 "properties": {
@@ -604,7 +735,7 @@
                         "nullable": true
                     },
                     "reason": {
-                        "$ref": "#/components/schemas/ReasonEnum"
+                        "$ref": "#/components/schemas/EvaluationReasonEnum"
                     },
                     "condition_index": {
                         "type": "integer",
@@ -761,6 +892,135 @@
                     "groups"
                 ]
             },
+            "FlagDetails": {
+                "type": "object",
+                "properties": {
+                    "key": {
+                        "type": "string"
+                    },
+                    "enabled": {
+                        "type": "boolean"
+                    },
+                    "variant": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "reason": {
+                        "$ref": "#/components/schemas/FlagEvaluationReason"
+                    },
+                    "metadata": {
+                        "$ref": "#/components/schemas/FlagDetailsMetadata"
+                    }
+                },
+                "required": [
+                    "enabled",
+                    "key",
+                    "metadata",
+                    "reason",
+                    "variant"
+                ]
+            },
+            "FlagDetailsMetadata": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "version": {
+                        "type": "integer"
+                    },
+                    "payload": {
+                        "nullable": true
+                    }
+                },
+                "required": [
+                    "id",
+                    "payload",
+                    "version"
+                ]
+            },
+            "FlagEvaluationReason": {
+                "type": "object",
+                "properties": {
+                    "code": {
+                        "$ref": "#/components/schemas/EvaluationReasonEnum"
+                    },
+                    "condition_index": {
+                        "type": "integer",
+                        "nullable": true
+                    }
+                },
+                "required": [
+                    "code",
+                    "condition_index"
+                ]
+            },
+            "FlagsRequestRequest": {
+                "type": "object",
+                "description": "Reject misspelled configuration instead of silently dropping it.",
+                "properties": {
+                    "api_key": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 64
+                    },
+                    "distinct_id": {
+                        "type": "string",
+                        "maxLength": 400
+                    },
+                    "person_properties": {
+                        "type": "object",
+                        "additionalProperties": {
+                            "nullable": true
+                        }
+                    }
+                },
+                "required": [
+                    "api_key",
+                    "distinct_id"
+                ]
+            },
+            "FlagsResponse": {
+                "type": "object",
+                "properties": {
+                    "flags": {
+                        "type": "object",
+                        "additionalProperties": {
+                            "$ref": "#/components/schemas/FlagDetails"
+                        }
+                    },
+                    "errorsWhileComputingFlags": {
+                        "type": "boolean"
+                    }
+                },
+                "required": [
+                    "errorsWhileComputingFlags",
+                    "flags"
+                ]
+            },
+            "LocalEvaluationFlag": {
+                "type": "object",
+                "properties": {
+                    "key": {
+                        "type": "string"
+                    },
+                    "active": {
+                        "type": "boolean"
+                    },
+                    "filters": {
+                        "$ref": "#/components/schemas/Filters"
+                    },
+                    "version": {
+                        "type": "integer"
+                    }
+                },
+                "required": [
+                    "active",
+                    "filters",
+                    "key",
+                    "version"
+                ]
+            },
             "Multivariate": {
                 "type": "object",
                 "description": "Reject misspelled configuration instead of silently dropping it.",
@@ -893,16 +1153,6 @@
                 "required": [
                     "key"
                 ]
-            },
-            "ReasonEnum": {
-                "enum": [
-                    "condition_match",
-                    "no_condition_match",
-                    "out_of_rollout_bound",
-                    "flag_disabled"
-                ],
-                "type": "string",
-                "description": "* `condition_match` - condition_match\n* `no_condition_match` - no_condition_match\n* `out_of_rollout_bound` - out_of_rollout_bound\n* `flag_disabled` - flag_disabled"
             },
             "StepEnum": {
                 "enum": [

@@ -5,5 +5,8 @@
  * Feature flag management API. Types for the console are generated from this schema.
  * OpenAPI spec version: 0.0.0
  */
+import type { LocalEvaluationFlag } from './localEvaluationFlag'
 
-export type SchemaRetrieve200Three = { [key: string]: unknown }
+export interface DefinitionsResponse {
+    flags: LocalEvaluationFlag[]
+}

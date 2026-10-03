@@ -6,10 +6,9 @@
  * OpenAPI spec version: 0.0.0
  */
 
-export type SchemaRetrieveFormat = typeof SchemaRetrieveFormat[keyof typeof SchemaRetrieveFormat];
-
+export type SchemaRetrieveFormat = (typeof SchemaRetrieveFormat)[keyof typeof SchemaRetrieveFormat]
 
 export const SchemaRetrieveFormat = {
-  json: 'json',
-  yaml: 'yaml',
-} as const;
+    json: 'json',
+    yaml: 'yaml',
+} as const

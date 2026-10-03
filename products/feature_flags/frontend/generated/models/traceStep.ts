@@ -5,27 +5,27 @@
  * Feature flag management API. Types for the console are generated from this schema.
  * OpenAPI spec version: 0.0.0
  */
-import type { OperatorEnum } from './operatorEnum';
-import type { StepEnum } from './stepEnum';
+import type { OperatorEnum } from './operatorEnum'
+import type { StepEnum } from './stepEnum'
 
 export interface TraceStep {
-  step: StepEnum;
-  result?: boolean;
-  condition_index?: number;
-  property_index?: number;
-  key?: string;
-  operator?: OperatorEnum;
-  actual?: unknown | null;
-  expected?: unknown | null;
-  missing?: boolean;
-  index?: number;
-  filters_pass?: boolean;
-  /** @nullable */
-  hash_key?: string | null;
-  /** @nullable */
-  value?: number | null;
-  threshold?: number;
-  in_rollout?: boolean;
-  /** @nullable */
-  variant?: string | null;
+    step: StepEnum
+    result?: boolean
+    condition_index?: number
+    property_index?: number
+    key?: string
+    operator?: OperatorEnum
+    actual?: unknown | null
+    expected?: unknown | null
+    missing?: boolean
+    index?: number
+    filters_pass?: boolean
+    /** @nullable */
+    hash_key?: string | null
+    /** @nullable */
+    value?: number | null
+    threshold?: number
+    in_rollout?: boolean
+    /** @nullable */
+    variant?: string | null
 }

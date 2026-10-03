@@ -5,11 +5,11 @@
  * Feature flag management API. Types for the console are generated from this schema.
  * OpenAPI spec version: 0.0.0
  */
-import type { Variant } from './variant';
+import type { Variant } from './variant'
 
 /**
  * Reject misspelled configuration instead of silently dropping it.
  */
 export interface Multivariate {
-  variants: Variant[];
+    variants: Variant[]
 }

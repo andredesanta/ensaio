@@ -5,22 +5,22 @@
  * Feature flag management API. Types for the console are generated from this schema.
  * OpenAPI spec version: 0.0.0
  */
-import type { Filters } from './filters';
+import type { Filters } from './filters'
 
 export interface FeatureFlag {
-  readonly id: number;
-  readonly team_id: number;
-  /**
+    readonly id: number
+    readonly team_id: number
+    /**
      * @maxLength 400
      * @pattern ^[-a-zA-Z0-9_]+$
      */
-  key: string;
-  name?: string;
-  active?: boolean;
-  readonly deleted: boolean;
-  readonly version: number;
-  filters?: Filters;
-  /** @nullable */
-  readonly created_by_id: number | null;
-  readonly created_at: string;
+    key: string
+    name?: string
+    active?: boolean
+    readonly deleted: boolean
+    readonly version: number
+    filters?: Filters
+    /** @nullable */
+    readonly created_by_id: number | null
+    readonly created_at: string
 }

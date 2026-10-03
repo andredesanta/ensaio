@@ -199,3 +199,48 @@ class EvaluationResultSerializer(serializers.Serializer[Any]):
     reason = serializers.ChoiceField(choices=EVALUATION_REASONS)
     condition_index = serializers.IntegerField(allow_null=True)
     trace = TraceStepSerializer(many=True)
+
+
+class FlagsRequestSerializer(StrictSerializer):
+    api_key = serializers.CharField(allow_blank=False, max_length=64)
+    distinct_id = serializers.CharField(allow_blank=True, max_length=400)
+    person_properties = serializers.DictField(
+        child=serializers.JSONField(allow_null=True),
+        required=False,
+        default=dict,
+    )
+
+
+class FlagEvaluationReasonSerializer(serializers.Serializer[Any]):
+    code = serializers.ChoiceField(choices=EVALUATION_REASONS)
+    condition_index = serializers.IntegerField(allow_null=True)
+
+
+class FlagDetailsMetadataSerializer(serializers.Serializer[Any]):
+    id = serializers.IntegerField()
+    version = serializers.IntegerField()
+    payload = serializers.JSONField(allow_null=True)
+
+
+class FlagDetailsSerializer(serializers.Serializer[Any]):
+    key = serializers.CharField()
+    enabled = serializers.BooleanField()
+    variant = serializers.CharField(allow_null=True)
+    reason = FlagEvaluationReasonSerializer()
+    metadata = FlagDetailsMetadataSerializer()
+
+
+class FlagsResponseSerializer(serializers.Serializer[Any]):
+    flags = serializers.DictField(child=FlagDetailsSerializer())
+    errorsWhileComputingFlags = serializers.BooleanField()
+
+
+class LocalEvaluationFlagSerializer(serializers.Serializer[Any]):
+    key = serializers.CharField()
+    active = serializers.BooleanField()
+    filters = FiltersSerializer()
+    version = serializers.IntegerField()
+
+
+class DefinitionsResponseSerializer(serializers.Serializer[Any]):
+    flags = LocalEvaluationFlagSerializer(many=True)

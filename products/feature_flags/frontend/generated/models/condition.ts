@@ -5,18 +5,18 @@
  * Feature flag management API. Types for the console are generated from this schema.
  * OpenAPI spec version: 0.0.0
  */
-import type { PropertyFilter } from './propertyFilter';
+import type { PropertyFilter } from './propertyFilter'
 
 /**
  * Reject misspelled configuration instead of silently dropping it.
  */
 export interface Condition {
-  properties: PropertyFilter[];
-  /**
+    properties: PropertyFilter[]
+    /**
      * @minimum 0
      * @maximum 100
      */
-  rollout_percentage?: number;
-  /** @nullable */
-  variant?: string | null;
+    rollout_percentage?: number
+    /** @nullable */
+    variant?: string | null
 }

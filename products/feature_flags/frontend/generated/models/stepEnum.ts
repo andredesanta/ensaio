@@ -14,14 +14,13 @@
  * * `variant_override` - variant_override
  * * `variant_hash` - variant_hash
  */
-export type StepEnum = typeof StepEnum[keyof typeof StepEnum];
-
+export type StepEnum = (typeof StepEnum)[keyof typeof StepEnum]
 
 export const StepEnum = {
-  flag_active: 'flag_active',
-  property: 'property',
-  condition: 'condition',
-  rollout_hash: 'rollout_hash',
-  variant_override: 'variant_override',
-  variant_hash: 'variant_hash',
-} as const;
+    flag_active: 'flag_active',
+    property: 'property',
+    condition: 'condition',
+    rollout_hash: 'rollout_hash',
+    variant_override: 'variant_override',
+    variant_hash: 'variant_hash',
+} as const

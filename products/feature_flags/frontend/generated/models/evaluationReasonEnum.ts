@@ -12,12 +12,11 @@
  * * `out_of_rollout_bound` - out_of_rollout_bound
  * * `flag_disabled` - flag_disabled
  */
-export type ReasonEnum = typeof ReasonEnum[keyof typeof ReasonEnum];
+export type EvaluationReasonEnum = (typeof EvaluationReasonEnum)[keyof typeof EvaluationReasonEnum]
 
-
-export const ReasonEnum = {
-  condition_match: 'condition_match',
-  no_condition_match: 'no_condition_match',
-  out_of_rollout_bound: 'out_of_rollout_bound',
-  flag_disabled: 'flag_disabled',
-} as const;
+export const EvaluationReasonEnum = {
+    condition_match: 'condition_match',
+    no_condition_match: 'no_condition_match',
+    out_of_rollout_bound: 'out_of_rollout_bound',
+    flag_disabled: 'flag_disabled',
+} as const

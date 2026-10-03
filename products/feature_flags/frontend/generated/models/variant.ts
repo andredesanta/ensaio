@@ -10,11 +10,11 @@
  * Reject misspelled configuration instead of silently dropping it.
  */
 export interface Variant {
-  /** @maxLength 400 */
-  key: string;
-  /**
+    /** @maxLength 400 */
+    key: string
+    /**
      * @minimum 0
      * @maximum 100
      */
-  rollout_percentage: number;
+    rollout_percentage: number
 }

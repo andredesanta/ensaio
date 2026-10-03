@@ -5,11 +5,11 @@
  * Feature flag management API. Types for the console are generated from this schema.
  * OpenAPI spec version: 0.0.0
  */
-import type { VariantRequest } from './variantRequest';
+import type { VariantRequest } from './variantRequest'
 
 /**
  * Reject misspelled configuration instead of silently dropping it.
  */
 export interface MultivariateRequest {
-  variants: VariantRequest[];
+    variants: VariantRequest[]
 }

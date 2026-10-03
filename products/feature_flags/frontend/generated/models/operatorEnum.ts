@@ -20,20 +20,19 @@
  * * `is_set` - is_set
  * * `is_not_set` - is_not_set
  */
-export type OperatorEnum = typeof OperatorEnum[keyof typeof OperatorEnum];
-
+export type OperatorEnum = (typeof OperatorEnum)[keyof typeof OperatorEnum]
 
 export const OperatorEnum = {
-  exact: 'exact',
-  is_not: 'is_not',
-  icontains: 'icontains',
-  not_icontains: 'not_icontains',
-  gt: 'gt',
-  gte: 'gte',
-  lt: 'lt',
-  lte: 'lte',
-  in: 'in',
-  not_in: 'not_in',
-  is_set: 'is_set',
-  is_not_set: 'is_not_set',
-} as const;
+    exact: 'exact',
+    is_not: 'is_not',
+    icontains: 'icontains',
+    not_icontains: 'not_icontains',
+    gt: 'gt',
+    gte: 'gte',
+    lt: 'lt',
+    lte: 'lte',
+    in: 'in',
+    not_in: 'not_in',
+    is_set: 'is_set',
+    is_not_set: 'is_not_set',
+} as const

@@ -6,4 +6,4 @@
  * OpenAPI spec version: 0.0.0
  */
 
-export type SchemaRetrieve200One = {[key: string]: unknown};
+export type SchemaRetrieve200One = { [key: string]: unknown }

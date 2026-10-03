@@ -5,15 +5,15 @@
  * Feature flag management API. Types for the console are generated from this schema.
  * OpenAPI spec version: 0.0.0
  */
-import type { Condition } from './condition';
-import type { FiltersPayloads } from './filtersPayloads';
-import type { Multivariate } from './multivariate';
+import type { Condition } from './condition'
+import type { FiltersPayloads } from './filtersPayloads'
+import type { Multivariate } from './multivariate'
 
 /**
  * Reject misspelled configuration instead of silently dropping it.
  */
 export interface Filters {
-  groups: Condition[];
-  multivariate?: Multivariate | null;
-  payloads?: FiltersPayloads;
+    groups: Condition[]
+    multivariate?: Multivariate | null
+    payloads?: FiltersPayloads
 }

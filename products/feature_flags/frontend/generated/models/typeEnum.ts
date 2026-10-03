@@ -9,9 +9,8 @@
 /**
  * * `person` - person
  */
-export type TypeEnum = typeof TypeEnum[keyof typeof TypeEnum];
-
+export type TypeEnum = (typeof TypeEnum)[keyof typeof TypeEnum]
 
 export const TypeEnum = {
-  person: 'person',
-} as const;
+    person: 'person',
+} as const

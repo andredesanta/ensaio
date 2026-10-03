@@ -6,4 +6,4 @@
  * OpenAPI spec version: 0.0.0
  */
 
-export type FiltersRequestPayloads = {[key: string]: unknown | null};
+export type FiltersRequestPayloads = { [key: string]: unknown | null }

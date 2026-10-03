@@ -6,4 +6,4 @@
  * OpenAPI spec version: 0.0.0
  */
 
-export type SchemaRetrieve200Three = { [key: string]: unknown }
+export type FlagsRequestRequestPersonProperties = { [key: string]: unknown | null }

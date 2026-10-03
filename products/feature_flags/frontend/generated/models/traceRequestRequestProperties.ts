@@ -6,4 +6,4 @@
  * OpenAPI spec version: 0.0.0
  */
 
-export type TraceRequestRequestProperties = {[key: string]: unknown | null};
+export type TraceRequestRequestProperties = { [key: string]: unknown | null }

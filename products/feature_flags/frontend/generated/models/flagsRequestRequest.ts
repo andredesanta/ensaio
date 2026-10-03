@@ -5,19 +5,18 @@
  * Feature flag management API. Types for the console are generated from this schema.
  * OpenAPI spec version: 0.0.0
  */
-import type { OperatorEnum } from './operatorEnum'
-import type { TypeEnum } from './typeEnum'
+import type { FlagsRequestRequestPersonProperties } from './flagsRequestRequestPersonProperties'
 
 /**
  * Reject misspelled configuration instead of silently dropping it.
  */
-export interface PropertyFilterRequest {
+export interface FlagsRequestRequest {
     /**
      * @minLength 1
-     * @maxLength 400
+     * @maxLength 64
      */
-    key: string
-    type?: TypeEnum
-    operator?: OperatorEnum
-    value?: unknown | null
+    api_key: string
+    /** @maxLength 400 */
+    distinct_id: string
+    person_properties?: FlagsRequestRequestPersonProperties
 }

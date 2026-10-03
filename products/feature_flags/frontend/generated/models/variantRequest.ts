@@ -10,14 +10,14 @@
  * Reject misspelled configuration instead of silently dropping it.
  */
 export interface VariantRequest {
-  /**
+    /**
      * @minLength 1
      * @maxLength 400
      */
-  key: string;
-  /**
+    key: string
+    /**
      * @minimum 0
      * @maximum 100
      */
-  rollout_percentage: number;
+    rollout_percentage: number
 }

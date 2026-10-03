@@ -5,5 +5,6 @@
  * Feature flag management API. Types for the console are generated from this schema.
  * OpenAPI spec version: 0.0.0
  */
+import type { FlagDetails } from './flagDetails'
 
-export type SchemaRetrieve200Three = { [key: string]: unknown }
+export type FlagsResponseFlags = { [key: string]: FlagDetails }
