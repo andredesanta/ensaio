@@ -1,6 +1,6 @@
 # Ensaio
 
-Ensaio is a small, working feature-flag platform built to understand the architecture and engineering trade-offs behind PostHog's Feature Flags product. It combines a pure deterministic evaluation kernel, a Django management and evaluation API, a React/Kea console, local-evaluation definition polling, and a deliberately small health-gated rollout controller. _Ensaio_ is Portuguese for “trial” or “rehearsal.”
+Ensaio is a small, working feature-flag platform built to understand the architecture and engineering trade-offs behind PostHog's Feature Flags product. It combines a pure deterministic evaluation kernel, a Django management and evaluation API, a React/Kea console, local-evaluation definition polling, a deliberately small health-gated rollout controller, and an external agent control plane generated from the same HTTP contract. _Ensaio_ is Portuguese for “trial” or “rehearsal.”
 
 This is an original learning project. It is not affiliated with, endorsed by, or copied from PostHog or any employer. The PostHog observations in this repository come only from public source and are labeled as verified or inferred.
 
@@ -19,8 +19,11 @@ Re-record it from mocked deterministic API responses with `./bin/record-demo`. T
 - A React 18 + TypeScript console whose feature state and side effects live in Kea logics. API models are generated from the DRF OpenAPI schema.
 - A deliberately small PostHog-shaped `POST /flags/?v=2` endpoint that returns detailed flag results for one project token.
 - A secret-authenticated `GET /flags/definitions` endpoint for local evaluation, including ETag/304 polling and post-commit cache invalidation.
-- A health-gated staged rollout controller with a pure decision function, idempotent plan API, guardrail samples, per-plan transactions, row locks, hold/pause behavior, and percentage-only reverts.
-- Full Python and TypeScript static checks, backend and frontend unit tests, API schema-drift checks, package-boundary checks, and a mocked Playwright product smoke test.
+- A health-gated staged rollout controller with a pure decision function, optimistic plan versions, guardrail samples, consistent flag-before-plan row locking, hold/pause behavior, and percentage-only reverts.
+- Project-scoped `ens_pat_` automation credentials whose secrets are returned once, password-hashed at rest, action-scoped, and accepted alongside existing session/CSRF authentication.
+- An independent TypeScript stdio MCP server using the official SDK. Twelve product-curated atomic tools call the real HTTP API; OpenAPI and strict product YAML generate their handlers and catalog.
+- A discoverable health-gated-rollout resource/prompt, native skill sync, and a versioned 12-task benchmark with REST fixture reset, read-only probes, deterministic trace/final-state scoring, and an explicit OpenAI model adapter.
+- Full Python and TypeScript static checks, backend and frontend unit tests, API and MCP generation-drift checks, package boundaries, and a mocked Playwright product smoke test.
 
 Everything above is implemented and covered by the repository's verification commands; the browser smoke and production build run separately from `./bin/test` and also run in CI. The limitations section is equally important: this is not a production PostHog replacement.
 
@@ -62,6 +65,50 @@ Useful endpoints:
 - definitions API: `GET http://127.0.0.1:8000/flags/definitions`;
 - OpenAPI schema: <http://127.0.0.1:8000/api/schema/>.
 
+## 60-second local MCP setup
+
+With the quickstart running, issue a project-scoped token for an active local user (the demo bootstrap uses team and user ID 1):
+
+```bash
+uv run python manage.py issue_agent_token \
+  --team-id 1 \
+  --user-id 1 \
+  --name local-cursor \
+  --scope feature_flag:read \
+  --scope feature_flag:write
+
+cd services/mcp
+corepack pnpm run build
+cd ../..
+```
+
+Store the printed `ens_pat_...` value immediately; Ensaio stores only its hash. Configure a stdio-capable client with:
+
+```json
+{
+  "mcpServers": {
+    "ensaio": {
+      "command": "node",
+      "args": ["/absolute/path/to/ensaio/services/mcp/dist/src/index.js"],
+      "env": {
+        "ENSAIO_BASE_URL": "http://127.0.0.1:8000",
+        "ENSAIO_PROJECT_ID": "1",
+        "ENSAIO_API_TOKEN": "ens_pat_REPLACE_WITH_ISSUED_TOKEN"
+      }
+    }
+  }
+}
+```
+
+The generated capability contract is [`services/mcp/schema/tool-catalog.json`](services/mcp/schema/tool-catalog.json); the product curation is [`products/feature_flags/mcp/tools.yaml`](products/feature_flags/mcp/tools.yaml).
+For staged rollouts, clients can discover `ensaio://skills/managing-health-gated-rollouts` as both an MCP resource and prompt. Native-skill clients can use:
+
+```bash
+./bin/sync-agent-skill \
+  --name managing-health-gated-rollouts \
+  --target /path/to/client/skills
+```
+
 ## Architecture
 
 ```text
@@ -78,6 +125,8 @@ ensaio_kernel.evaluate() ◀── POST /flags       GET /flags/definitions
 local consumer evaluates downloaded definitions without another request
 
 tick_rollouts ─▶ pure decide(plan, samples, now) ─▶ transactional ORM effects
+
+external agent ─▶ official SDK / stdio MCP ─▶ Bearer ens_pat_ ─▶ same HTTP API
 ```
 
 The main boundary is intentional:
@@ -86,6 +135,7 @@ The main boundary is intentional:
 - `packages/ensaio_kernel/` owns deterministic evaluation and imports neither Django nor product code;
 - `products/feature_flags/frontend/` owns the feature's scenes and Kea state; `frontend/` is only the Vite shell and shared UI;
 - serializers generate OpenAPI, OpenAPI generates TypeScript models, and CI rejects generated drift.
+- `services/mcp/` is a separate HTTP client package: it imports no Django, backend, kernel, or database code.
 
 [`tach.toml`](tach.toml), Ruff's forbidden-import rules, and `tach check-external` make the Python boundary executable rather than aspirational.
 
@@ -121,7 +171,7 @@ This is a local in-process microbenchmark, not a load test or production capacit
 ./bin/test
 ```
 
-That single command runs Ruff lint and format checks, mypy, both tach boundary checks, OpenAPI schema drift detection, pytest, TypeScript checking, Oxlint, Oxfmt, and Jest.
+That single command runs Ruff lint and format checks, mypy, both tach boundary checks, OpenAPI schema drift detection, pytest, frontend checks, deterministic MCP generation/skill/benchmark validation, MCP TypeScript checks, and protocol tests. Paid network model evals are deliberately excluded.
 
 Additional checks:
 
@@ -133,6 +183,9 @@ corepack pnpm run build
 cd ..
 
 uv run python manage.py tick_rollouts
+
+./bin/generate-mcp
+./bin/check-mcp
 ```
 
 CI additionally runs `corepack pnpm run generate` and requires a clean Git diff, then runs the production build and Playwright smoke. Kea typegen's volatile header timestamp is normalized by `frontend/scripts/normalize-kea-typegen.mjs`, so generated drift represents a real contract change.
@@ -143,9 +196,15 @@ After changing a serializer, view, route, or Kea logic:
 ./bin/generate-schema
 cd frontend
 corepack pnpm run generate
+cd ..
+./bin/generate-mcp
 ```
 
-Do not hand-edit `frontend/openapi.json`, generated API models, or `*LogicType.ts` files.
+Do not hand-edit `frontend/openapi.json`, generated API models, or `*LogicType.ts` files. Do not hand-edit `services/mcp/src/tools/generated.ts` or `services/mcp/schema/tool-catalog.json`.
+
+### Agent benchmark status
+
+Deterministic benchmark validation and MCP protocol tests run locally and in CI. The 2026-10-03 synthetic loopback integration completed all four read-only probes (p50 100 ms, p95 118 ms). That one developer-machine run includes process and HTTP overhead; it is neither a model eval nor a capacity claim. The chosen external client was the official MCP SDK stdio client; it loaded the rollout skill as a resource and completed an MCP create → trace → rollout-plan workflow with REST final-state verification. The real adapter requires `OPENAI_API_KEY` plus an explicit `ENSAIO_EVAL_MODEL`; the runner fails before writing output when either is missing. No M7 model baseline is checked in because provider credentials were not available for the implementation run, and no result was fabricated. See [`services/mcp/evals/README.md`](services/mcp/evals/README.md).
 
 ## What I noticed using and reading PostHog
 
@@ -160,11 +219,13 @@ The complete source study is [What I learned from PostHog](docs/notes/what-i-lea
 ## Security, scope, and non-goals
 
 - The console treats every Django staff user as an operator for every team. There is no organization membership model or production RBAC.
+- Automation tokens are project-scoped and have read/write scopes, but M7 does not add organization RBAC, token-management UI, OAuth, rate limiting, or a hosted MCP transport.
 - `POST /flags` looks up a raw public project token. Definitions use a secret token whose password hash is stored, but lookup scans teams in this small project.
 - There is no person store, identity merge, experience continuity, group evaluation, cohort engine, event ingestion, analytics, experimentation statistics, billing, rate limiting, audit log, or SDK.
 - Live evaluation currently reads PostgreSQL through Django. It is not a low-latency horizontally scaled evaluation fleet.
 - Definitions use process-local memory caching. There is no Redis, S3, queue, push invalidation, cross-process coherence, or cache-repair worker.
 - The rollout controller accepts caller-supplied samples and an absolute threshold. It does not establish causality, compare treatment/control populations, or schedule itself.
+- MCP exposes no delete, scheduler, SQL, arbitrary-request, or project-switch tool. Stdio is local-only. Agent traces and benchmarks are development evidence, not production reliability claims.
 - Development defaults, bootstrap credentials, CORS policy, and `ALLOWED_HOSTS` are local-only. A real deployment needs a security and operations design.
 
 ## Architecture decisions
@@ -174,5 +235,6 @@ The complete source study is [What I learned from PostHog](docs/notes/what-i-lea
 3. [ADR-3 — Definitions polling and ETags](docs/adr/0003-definitions-etag-and-polling.md)
 4. [ADR-4 — Health-gated rollout controller](docs/adr/0004-health-gated-rollout-controller.md)
 5. [ADR-5 — Identity and caller-supplied properties](docs/adr/0005-identity-and-caller-supplied-properties.md)
+6. [ADR-6 — Agent control plane over the management API](docs/adr/0006-agent-control-plane.md)
 
 Contributor and agent constraints are in [`AGENTS.md`](AGENTS.md).
