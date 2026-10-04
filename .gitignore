@@ -8,11 +8,15 @@ __pycache__/
 .hypothesis/
 .tach/
 .coverage
+.idea/
 htmlcov/
 
 node_modules/
 dist/
 *.tsbuildinfo
+frontend/test-results/
+frontend/playwright-report/
+frontend/demo-output/
 
 .env
 .DS_Store
