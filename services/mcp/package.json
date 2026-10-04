@@ -1,0 +1,41 @@
+{
+    "name": "@ensaio/mcp",
+    "version": "0.1.0",
+    "private": true,
+    "description": "Ensaio's independent stdio MCP control plane",
+    "type": "module",
+    "scripts": {
+        "build": "tsc -p tsconfig.json",
+        "start": "node dist/src/index.js",
+        "generate": "tsx scripts/generate-tools.ts",
+        "generate:check": "tsx scripts/generate-tools.ts --check",
+        "validate": "tsx scripts/validate-tools.ts",
+        "typecheck": "tsc --noEmit -p tsconfig.json",
+        "lint": "oxlint src scripts evals tests",
+        "format": "oxfmt --write --config .oxfmtrc.json --ignore-path .oxfmtignore \"{src,scripts,evals,tests}/**/*.{ts,json,yaml,yml}\" \"*.{json,ts}\" \"schema/*.json\"",
+        "format:check": "oxfmt --check --config .oxfmtrc.json --ignore-path .oxfmtignore \"{src,scripts,evals,tests}/**/*.{ts,json,yaml,yml}\" \"*.{json,ts}\" \"schema/*.json\"",
+        "test": "vitest run",
+        "integration:live": "tsx evals/runner/live.ts",
+        "eval:probe": "tsx evals/runner/probe.ts",
+        "eval:agent": "tsx evals/runner/agent.ts"
+    },
+    "dependencies": {
+        "@modelcontextprotocol/sdk": "1.32.0",
+        "ajv": "8.17.1",
+        "openai": "7.27.0",
+        "yaml": "2.9.1",
+        "zod": "4.6.5"
+    },
+    "devDependencies": {
+        "@types/node": "24.9.2",
+        "oxfmt": "0.57.0",
+        "oxlint": "1.72.0",
+        "tsx": "4.20.6",
+        "typescript": "6.0.3",
+        "vitest": "4.1.0"
+    },
+    "engines": {
+        "node": ">=24 <25"
+    },
+    "packageManager": "pnpm@10.29.3"
+}
