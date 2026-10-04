@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+set -euo pipefail
+cd "$(dirname "$0")/.."
+
+corepack pnpm --dir services/mcp run generate:check
+corepack pnpm --dir services/mcp run validate
+corepack pnpm --dir services/mcp run typecheck
+corepack pnpm --dir services/mcp run lint
+corepack pnpm --dir services/mcp run format:check
+corepack pnpm --dir services/mcp test

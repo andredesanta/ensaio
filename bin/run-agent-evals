@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+set -euo pipefail
+cd "$(dirname "$0")/.."
+
+if [[ -z "${OPENAI_API_KEY:-}" ]]; then
+    echo "OPENAI_API_KEY is required; no agent run or baseline was created." >&2
+    exit 1
+fi
+if [[ -z "${ENSAIO_EVAL_MODEL:-}" ]]; then
+    echo "ENSAIO_EVAL_MODEL is required; choose the exact model explicitly." >&2
+    exit 1
+fi
+
+corepack pnpm --dir services/mcp run build
+corepack pnpm --dir services/mcp run eval:agent -- "$@"

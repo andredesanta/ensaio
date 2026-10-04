@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+set -euo pipefail
+cd "$(dirname "$0")/.."
+
+docker compose up -d db
+uv run python manage.py migrate --noinput
+uv run python scripts/mcp_live_integration.py

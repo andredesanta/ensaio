@@ -39,28 +39,49 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-        with:
-          package_json_file: frontend/package.json
       - uses: actions/setup-node@v4
         with:
           node-version-file: .nvmrc
-          cache: pnpm
-          cache-dependency-path: frontend/pnpm-lock.yaml
+      - run: corepack enable && corepack prepare pnpm@10.29.3 --activate
       - working-directory: frontend
-        run: pnpm install --frozen-lockfile
+        run: corepack pnpm install --frozen-lockfile
       - working-directory: frontend
-        run: pnpm run generate
+        run: corepack pnpm run generate
       - run: git diff --exit-code
       - working-directory: frontend
-        run: pnpm exec tsc --noEmit
+        run: corepack pnpm exec tsc --noEmit
       - working-directory: frontend
-        run: pnpm run lint
+        run: corepack pnpm run lint
       - working-directory: frontend
-        run: pnpm run format:check
+        run: corepack pnpm run format:check
       - working-directory: frontend
-        run: pnpm test
+        run: corepack pnpm test
       - working-directory: frontend
-        run: pnpm exec playwright install --with-deps chromium
+        run: corepack pnpm run build
       - working-directory: frontend
-        run: pnpm run test:smoke
+        run: corepack pnpm exec playwright install --with-deps chromium
+      - working-directory: frontend
+        run: corepack pnpm run test:smoke
+
+  mcp:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+      - run: corepack enable && corepack prepare pnpm@10.29.3 --activate
+      - working-directory: services/mcp
+        run: corepack pnpm install --frozen-lockfile
+      - run: ./bin/generate-mcp
+      - run: git diff --exit-code
+      - working-directory: services/mcp
+        run: corepack pnpm run typecheck
+      - working-directory: services/mcp
+        run: corepack pnpm run lint
+      - working-directory: services/mcp
+        run: corepack pnpm run format:check
+      - working-directory: services/mcp
+        run: corepack pnpm run build
+      - working-directory: services/mcp
+        run: corepack pnpm test

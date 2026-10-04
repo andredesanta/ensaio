@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# Same checks CI runs. Use this before you consider a milestone done.
+# Core local checks shared with CI. Generation drift, build, and Playwright run
+# separately because they need a clean Git baseline or browser tooling.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
@@ -20,3 +21,5 @@ uv run pytest
     corepack pnpm run format:check
     corepack pnpm test
 )
+
+./bin/check-mcp

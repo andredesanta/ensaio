@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 # Install Python and JavaScript dependencies. Run once after clone, and again
-# when pyproject.toml or frontend/package.json changes.
+# when Python or either TypeScript package manifest changes.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
 uv sync
 (cd frontend && corepack pnpm install)
+(cd services/mcp && corepack pnpm install)
