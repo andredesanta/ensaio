@@ -2,7 +2,7 @@ import { useActions, useValues } from 'kea'
 import type { ChangeEvent, ReactElement } from 'react'
 
 import { Button, Card, ErrorBanner, Field, Input, Select, Tag } from '../../../../frontend/src/lib/ui'
-import type { RolloutPlanRequest } from '../generated/models'
+import type { RolloutPlanMutationRequest } from '../generated/models'
 import { ComparisonEnum, RolloutStatusEnum } from '../generated/models'
 import { rolloutPlanLogic } from '../rolloutPlanLogic'
 
@@ -20,7 +20,7 @@ export function RolloutPlanCard({ teamId, flagId }: RolloutPlanCardProps): React
     const { rolloutPlan, rolloutDraft, rolloutPlanLoading, planError } = useValues(logic)
     const { setRolloutDraft, saveRolloutPlan, deleteRolloutPlan } = useActions(logic)
 
-    const updateDraft = (changes: Partial<RolloutPlanRequest>): void => {
+    const updateDraft = (changes: Partial<RolloutPlanMutationRequest>): void => {
         setRolloutDraft({ ...rolloutDraft, ...changes })
     }
 
@@ -240,7 +240,16 @@ export function RolloutPlanCard({ teamId, flagId }: RolloutPlanCardProps): React
 
                     <div className="flex flex-wrap justify-end gap-2">
                         {rolloutPlan !== null ? (
-                            <Button variant="danger" disabled={rolloutPlanLoading} onClick={() => deleteRolloutPlan()}>
+                            <Button
+                                variant="danger"
+                                disabled={rolloutPlanLoading}
+                                onClick={() =>
+                                    deleteRolloutPlan({
+                                        expected_plan_id: rolloutPlan.id,
+                                        expected_version: rolloutPlan.version,
+                                    })
+                                }
+                            >
                                 Delete plan
                             </Button>
                         ) : null}

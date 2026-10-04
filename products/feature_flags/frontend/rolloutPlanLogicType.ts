@@ -3,14 +3,18 @@
 import type { Logic } from 'kea'
 
 import type { RolloutPlanLogicProps } from './rolloutPlanLogic'
-import type { RolloutPlan, RolloutPlanRequest } from './generated/models/index'
+import type {
+    ProjectsFeatureFlagsRolloutPlanDestroyParams,
+    RolloutPlan,
+    RolloutPlanMutationRequest,
+} from './generated/models/index'
 
 export interface rolloutPlanLogicType extends Logic {
     actionCreators: {
-        setRolloutDraft: (draft: RolloutPlanRequest) => {
+        setRolloutDraft: (draft: RolloutPlanMutationRequest) => {
             type: 'set rollout draft (products.featureFlags.rolloutPlanLogic.*)'
             payload: {
-                draft: RolloutPlanRequest
+                draft: RolloutPlanMutationRequest
             }
         }
         setPlanError: (error: string | null) => {
@@ -43,18 +47,18 @@ export interface rolloutPlanLogicType extends Logic {
                 errorObject?: any
             }
         }
-        saveRolloutPlan: (request: RolloutPlanRequest) => {
+        saveRolloutPlan: (request: RolloutPlanMutationRequest) => {
             type: 'save rollout plan (products.featureFlags.rolloutPlanLogic.*)'
-            payload: RolloutPlanRequest
+            payload: RolloutPlanMutationRequest
         }
         saveRolloutPlanSuccess: (
             rolloutPlan: RolloutPlan,
-            payload?: RolloutPlanRequest
+            payload?: RolloutPlanMutationRequest
         ) => {
             type: 'save rollout plan success (products.featureFlags.rolloutPlanLogic.*)'
             payload: {
                 rolloutPlan: RolloutPlan
-                payload?: RolloutPlanRequest
+                payload?: RolloutPlanMutationRequest
             }
         }
         saveRolloutPlanFailure: (
@@ -67,18 +71,18 @@ export interface rolloutPlanLogicType extends Logic {
                 errorObject?: any
             }
         }
-        deleteRolloutPlan: () => {
+        deleteRolloutPlan: (request: ProjectsFeatureFlagsRolloutPlanDestroyParams) => {
             type: 'delete rollout plan (products.featureFlags.rolloutPlanLogic.*)'
-            payload: any
+            payload: ProjectsFeatureFlagsRolloutPlanDestroyParams
         }
         deleteRolloutPlanSuccess: (
             rolloutPlan: null,
-            payload?: any
+            payload?: ProjectsFeatureFlagsRolloutPlanDestroyParams
         ) => {
             type: 'delete rollout plan success (products.featureFlags.rolloutPlanLogic.*)'
             payload: {
                 rolloutPlan: null
-                payload?: any
+                payload?: ProjectsFeatureFlagsRolloutPlanDestroyParams
             }
         }
         deleteRolloutPlanFailure: (
@@ -119,33 +123,36 @@ export interface rolloutPlanLogicType extends Logic {
         deleteRolloutPlanFailure: 'delete rollout plan failure (products.featureFlags.rolloutPlanLogic.*)'
     }
     actions: {
-        setRolloutDraft: (draft: RolloutPlanRequest) => void
+        setRolloutDraft: (draft: RolloutPlanMutationRequest) => void
         setPlanError: (error: string | null) => void
         loadRolloutPlan: () => void
         loadRolloutPlanSuccess: (rolloutPlan: RolloutPlan | null, payload?: any) => void
         loadRolloutPlanFailure: (error: string, errorObject?: any) => void
-        saveRolloutPlan: (request: RolloutPlanRequest) => void
-        saveRolloutPlanSuccess: (rolloutPlan: RolloutPlan, payload?: RolloutPlanRequest) => void
+        saveRolloutPlan: (request: RolloutPlanMutationRequest) => void
+        saveRolloutPlanSuccess: (rolloutPlan: RolloutPlan, payload?: RolloutPlanMutationRequest) => void
         saveRolloutPlanFailure: (error: string, errorObject?: any) => void
-        deleteRolloutPlan: () => void
-        deleteRolloutPlanSuccess: (rolloutPlan: null, payload?: any) => void
+        deleteRolloutPlan: (request: ProjectsFeatureFlagsRolloutPlanDestroyParams) => void
+        deleteRolloutPlanSuccess: (rolloutPlan: null, payload?: ProjectsFeatureFlagsRolloutPlanDestroyParams) => void
         deleteRolloutPlanFailure: (error: string, errorObject?: any) => void
     }
     asyncActions: {
-        setRolloutDraft: (draft: RolloutPlanRequest) => Promise<any>
+        setRolloutDraft: (draft: RolloutPlanMutationRequest) => Promise<any>
         setPlanError: (error: string | null) => Promise<any>
         loadRolloutPlan: () => Promise<any>
         loadRolloutPlanSuccess: (rolloutPlan: RolloutPlan | null, payload?: any) => Promise<any>
         loadRolloutPlanFailure: (error: string, errorObject?: any) => Promise<any>
-        saveRolloutPlan: (request: RolloutPlanRequest) => Promise<any>
-        saveRolloutPlanSuccess: (rolloutPlan: RolloutPlan, payload?: RolloutPlanRequest) => Promise<any>
+        saveRolloutPlan: (request: RolloutPlanMutationRequest) => Promise<any>
+        saveRolloutPlanSuccess: (rolloutPlan: RolloutPlan, payload?: RolloutPlanMutationRequest) => Promise<any>
         saveRolloutPlanFailure: (error: string, errorObject?: any) => Promise<any>
-        deleteRolloutPlan: () => Promise<any>
-        deleteRolloutPlanSuccess: (rolloutPlan: null, payload?: any) => Promise<any>
+        deleteRolloutPlan: (request: ProjectsFeatureFlagsRolloutPlanDestroyParams) => Promise<any>
+        deleteRolloutPlanSuccess: (
+            rolloutPlan: null,
+            payload?: ProjectsFeatureFlagsRolloutPlanDestroyParams
+        ) => Promise<any>
         deleteRolloutPlanFailure: (error: string, errorObject?: any) => Promise<any>
     }
     defaults: {
-        rolloutDraft: RolloutPlanRequest
+        rolloutDraft: RolloutPlanMutationRequest
         planError: string | null
         rolloutPlan: RolloutPlan | null
         rolloutPlanLoading: boolean
@@ -183,7 +190,7 @@ export interface rolloutPlanLogicType extends Logic {
         saveRolloutPlan: ((
             action: {
                 type: 'save rollout plan (products.featureFlags.rolloutPlanLogic.*)'
-                payload: RolloutPlanRequest
+                payload: RolloutPlanMutationRequest
             },
             previousState: any
         ) => void | Promise<void>)[]
@@ -192,7 +199,7 @@ export interface rolloutPlanLogicType extends Logic {
                 type: 'save rollout plan success (products.featureFlags.rolloutPlanLogic.*)'
                 payload: {
                     rolloutPlan: RolloutPlan
-                    payload?: RolloutPlanRequest
+                    payload?: RolloutPlanMutationRequest
                 }
             },
             previousState: any
@@ -212,7 +219,7 @@ export interface rolloutPlanLogicType extends Logic {
                 type: 'delete rollout plan success (products.featureFlags.rolloutPlanLogic.*)'
                 payload: {
                     rolloutPlan: null
-                    payload?: any
+                    payload?: ProjectsFeatureFlagsRolloutPlanDestroyParams
                 }
             },
             previousState: any
@@ -236,32 +243,32 @@ export interface rolloutPlanLogicType extends Logic {
         action: any,
         fullState: any
     ) => {
-        rolloutDraft: RolloutPlanRequest
+        rolloutDraft: RolloutPlanMutationRequest
         planError: string | null
         rolloutPlan: RolloutPlan | null
         rolloutPlanLoading: boolean
     }
     reducers: {
-        rolloutDraft: (state: RolloutPlanRequest, action: any, fullState: any) => RolloutPlanRequest
+        rolloutDraft: (state: RolloutPlanMutationRequest, action: any, fullState: any) => RolloutPlanMutationRequest
         planError: (state: string | null, action: any, fullState: any) => string | null
         rolloutPlan: (state: RolloutPlan | null, action: any, fullState: any) => RolloutPlan | null
         rolloutPlanLoading: (state: boolean, action: any, fullState: any) => boolean
     }
     selector: (state: any) => {
-        rolloutDraft: RolloutPlanRequest
+        rolloutDraft: RolloutPlanMutationRequest
         planError: string | null
         rolloutPlan: RolloutPlan | null
         rolloutPlanLoading: boolean
     }
     selectors: {
-        rolloutDraft: (state: any, props?: any) => RolloutPlanRequest
+        rolloutDraft: (state: any, props?: any) => RolloutPlanMutationRequest
         planError: (state: any, props?: any) => string | null
         rolloutPlan: (state: any, props?: any) => RolloutPlan | null
         rolloutPlanLoading: (state: any, props?: any) => boolean
     }
     sharedListeners: {}
     values: {
-        rolloutDraft: RolloutPlanRequest
+        rolloutDraft: RolloutPlanMutationRequest
         planError: string | null
         rolloutPlan: RolloutPlan | null
         rolloutPlanLoading: boolean

@@ -7,7 +7,7 @@
  */
 import type { FiltersRequest } from './filtersRequest'
 
-export interface PatchedFeatureFlagRequest {
+export interface PatchedFeatureFlagUpdateRequest {
     /**
      * @minLength 1
      * @maxLength 400
@@ -17,4 +17,6 @@ export interface PatchedFeatureFlagRequest {
     name?: string
     active?: boolean
     filters?: FiltersRequest
+    /** @minimum 1 */
+    expected_version: number
 }

@@ -29,8 +29,16 @@ def _flag(team: Team) -> FeatureFlag:
     )
 
 
-def _plan_payload(*, status: str = "DRAFT", managed_group_index: int = 0) -> dict[str, Any]:
+def _plan_payload(
+    *,
+    status: str = "DRAFT",
+    managed_group_index: int = 0,
+    expected_plan_id: int | None = None,
+    expected_version: int | None = None,
+) -> dict[str, Any]:
     return {
+        "expected_plan_id": expected_plan_id,
+        "expected_version": expected_version,
         "status": status,
         "managed_group_index": managed_group_index,
         "phases": [
@@ -127,7 +135,15 @@ def test_activating_and_manually_reverting_a_plan_only_change_the_managed_group(
     flag.refresh_from_db()
     activated_version = flag.version
 
-    reverted = client.put(_plan_url(team, flag), _plan_payload(status="REVERTED"), format="json")
+    reverted = client.put(
+        _plan_url(team, flag),
+        _plan_payload(
+            status="REVERTED",
+            expected_plan_id=activated.data["id"],
+            expected_version=activated.data["version"],
+        ),
+        format="json",
+    )
     flag.refresh_from_db()
 
     assert activated.status_code == 201, activated.data
@@ -152,18 +168,19 @@ def test_direct_edit_of_the_managed_percentage_returns_conflict_but_other_edits_
     }
     conflict = client.patch(
         f"/api/projects/{team.pk}/feature_flags/{flag.pk}/",
-        {"filters": changed_filters},
+        {"filters": changed_filters, "expected_version": flag.version},
         format="json",
     )
     renamed = client.patch(
         f"/api/projects/{team.pk}/feature_flags/{flag.pk}/",
-        {"name": "Checkout v2"},
+        {"name": "Checkout v2", "expected_version": flag.version},
         format="json",
     )
 
     assert conflict.status_code == 409
     assert conflict.data == {
-        "detail": "This rollout percentage is managed by the rollout plan. Update the plan instead."
+        "detail": "This rollout percentage is managed by the rollout plan. Update the plan instead.",
+        "code": "managed_by_rollout_plan",
     }
     assert renamed.status_code == 200
 
@@ -172,9 +189,11 @@ def test_delete_removes_the_plan_without_changing_the_flag() -> None:
     client = _authenticated_client()
     team = Team.objects.create(name="Growth")
     flag = _flag(team)
-    client.put(_plan_url(team, flag), _plan_payload(), format="json")
+    created = client.put(_plan_url(team, flag), _plan_payload(), format="json")
 
-    response = client.delete(_plan_url(team, flag))
+    response = client.delete(
+        f"{_plan_url(team, flag)}?expected_plan_id={created.data['id']}&expected_version={created.data['version']}"
+    )
 
     assert response.status_code == 204
     assert not RolloutPlan.objects.filter(flag=flag).exists()

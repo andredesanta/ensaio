@@ -43,6 +43,7 @@ function rolloutPlanFixture(): RolloutPlan {
             min_samples: 100,
             max_hold_minutes: 30,
         },
+        version: 3,
         recent_samples: [],
         created_at: '2026-10-02T12:00:00Z',
     }
@@ -56,7 +57,7 @@ describe('rolloutPlanLogic', () => {
 
     test('loads an existing plan into editable Kea state', async () => {
         const plan = rolloutPlanFixture()
-        mockRetrieve.mockResolvedValue({ data: plan } as never)
+        mockRetrieve.mockResolvedValue({ data: plan, status: 200 } as never)
 
         const logic = rolloutPlanLogic({ teamId: 1, flagId: 1 })
         const unmount = logic.mount()
@@ -69,7 +70,9 @@ describe('rolloutPlanLogic', () => {
     })
 
     test('treats a missing plan as an empty draft instead of an error', async () => {
-        mockRetrieve.mockRejectedValue(new ApiError(404, undefined))
+        mockRetrieve.mockRejectedValue(
+            new ApiError(404, { detail: 'Rollout plan not found.', code: 'rollout_plan_not_found' })
+        )
 
         const logic = rolloutPlanLogic({ teamId: 1, flagId: 1 })
         const unmount = logic.mount()
@@ -78,6 +81,18 @@ describe('rolloutPlanLogic', () => {
         expect(logic.values.rolloutPlan).toBeNull()
         expect(logic.values.rolloutDraft).toEqual(newRolloutPlan())
         expect(logic.values.planError).toBeNull()
+        unmount()
+    })
+
+    test('does not hide an unexpected rollout-plan 404', async () => {
+        mockRetrieve.mockRejectedValue(new ApiError(404, { detail: 'Project not found.', code: 'project_not_found' }))
+
+        const logic = rolloutPlanLogic({ teamId: 1, flagId: 1 })
+        const unmount = logic.mount()
+        await expectLogic(logic).toFinishAllListeners()
+
+        expect(logic.values.rolloutPlan).toBeNull()
+        expect(logic.values.planError).toContain('project_not_found')
         unmount()
     })
 
@@ -94,7 +109,7 @@ describe('rolloutPlanLogic', () => {
 
     test('save and delete listeners keep the persisted plan and draft synchronized', async () => {
         const plan = rolloutPlanFixture()
-        mockRetrieve.mockResolvedValue({ data: null } as never)
+        mockRetrieve.mockResolvedValue({ data: null, status: 200 } as never)
         mockUpdate.mockResolvedValue({ data: plan } as never)
         mockDestroy.mockResolvedValue({ data: undefined } as never)
 
@@ -107,8 +122,12 @@ describe('rolloutPlanLogic', () => {
         expect(logic.values.rolloutPlan).toEqual(plan)
         expect(logic.values.rolloutDraft.status).toBe(RolloutStatusEnum.ACTIVE)
 
-        logic.actions.deleteRolloutPlan()
+        logic.actions.deleteRolloutPlan({ expected_plan_id: plan.id, expected_version: plan.version })
         await expectLogic(logic).toFinishAllListeners()
+        expect(mockDestroy).toHaveBeenCalledWith(1, 1, {
+            expected_plan_id: plan.id,
+            expected_version: plan.version,
+        })
         expect(logic.values.rolloutPlan).toBeNull()
         expect(logic.values.rolloutDraft).toEqual(newRolloutPlan())
         unmount()

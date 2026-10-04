@@ -9,7 +9,7 @@ import type { GuardrailRequest } from './guardrailRequest'
 import type { RolloutPhaseRequest } from './rolloutPhaseRequest'
 import type { RolloutStatusEnum } from './rolloutStatusEnum'
 
-export interface RolloutPlanRequest {
+export interface RolloutPlanMutationRequest {
     status?: RolloutStatusEnum
     /**
      * @minimum 0
@@ -18,4 +18,14 @@ export interface RolloutPlanRequest {
     managed_group_index: number
     phases: RolloutPhaseRequest[]
     guardrail: GuardrailRequest
+    /**
+     * @minimum 1
+     * @nullable
+     */
+    expected_plan_id: number | null
+    /**
+     * @minimum 1
+     * @nullable
+     */
+    expected_version: number | null
 }

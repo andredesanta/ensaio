@@ -1,12 +1,18 @@
+from concurrent.futures import ThreadPoolExecutor
 from datetime import timedelta
+from threading import Barrier
 
 import pytest
+from django.contrib.auth.models import User
 from django.core.cache import cache
 from django.core.management import call_command
+from django.db import close_old_connections
 from django.utils import timezone
+from rest_framework.test import APIClient
 
 from products.feature_flags.backend.definitions_cache import definitions_cache_key
 from products.feature_flags.backend.models import FeatureFlag, GuardrailSample, RolloutPlan, Team
+from products.feature_flags.backend.rollout_services import tick_rollout_plan
 
 pytestmark = pytest.mark.django_db(transaction=True)
 
@@ -110,6 +116,11 @@ def test_missing_or_under_sampled_data_holds_then_pauses_and_never_advances() ->
     assert plan.hold_started_at is not None
     assert flag.filters["groups"][0]["rollout_percentage"] == 10
     assert flag.version == 1
+    holding_version = plan.version
+
+    call_command("tick_rollouts")
+    plan.refresh_from_db()
+    assert plan.version == holding_version
 
     plan.hold_started_at = timezone.now() - timedelta(minutes=30)
     plan.save(update_fields={"hold_started_at"})
@@ -121,3 +132,83 @@ def test_missing_or_under_sampled_data_holds_then_pauses_and_never_advances() ->
     assert plan.hold_reason == "max_hold_exceeded"
     assert flag.filters["groups"][0]["rollout_percentage"] == 10
     assert flag.version == 1
+
+
+def test_concurrent_plan_replace_and_tick_finish_without_deadlock_in_one_lock_order() -> None:
+    flag, plan = _plan()
+    _sample(plan)
+    user = User.objects.create_user(username="concurrent-replace")
+    barrier = Barrier(2)
+
+    def tick() -> str:
+        close_old_connections()
+        barrier.wait()
+        decision = tick_rollout_plan(plan.pk, timezone.now())
+        close_old_connections()
+        return type(decision).__name__
+
+    def replace() -> int:
+        close_old_connections()
+        client = APIClient()
+        client.force_authenticate(user=user)
+        barrier.wait()
+        response = client.put(
+            f"/api/projects/{flag.team_id}/feature_flags/{flag.pk}/rollout_plan/",
+            {
+                "expected_plan_id": plan.pk,
+                "expected_version": plan.version,
+                "status": "PAUSED",
+                "managed_group_index": plan.managed_group_index,
+                "phases": plan.phases,
+                "guardrail": plan.guardrail,
+            },
+            format="json",
+        )
+        close_old_connections()
+        return response.status_code
+
+    with ThreadPoolExecutor(max_workers=2) as executor:
+        tick_future = executor.submit(tick)
+        replace_future = executor.submit(replace)
+        tick_result = tick_future.result(timeout=10)
+        replace_status = replace_future.result(timeout=10)
+
+    assert tick_result in {"Advance", "Wait"}
+    assert replace_status in {200, 409}
+    assert RolloutPlan.objects.filter(pk=plan.pk, flag=flag).exists()
+
+
+def test_concurrent_plan_delete_and_tick_finish_without_deadlock_or_cross_row_write() -> None:
+    flag, plan = _plan()
+    _sample(plan)
+    user = User.objects.create_user(username="concurrent-delete")
+    barrier = Barrier(2)
+
+    def tick() -> str:
+        close_old_connections()
+        barrier.wait()
+        decision = tick_rollout_plan(plan.pk, timezone.now())
+        close_old_connections()
+        return type(decision).__name__
+
+    def delete() -> int:
+        close_old_connections()
+        client = APIClient()
+        client.force_authenticate(user=user)
+        barrier.wait()
+        response = client.delete(
+            f"/api/projects/{flag.team_id}/feature_flags/{flag.pk}/rollout_plan/"
+            f"?expected_plan_id={plan.pk}&expected_version={plan.version}"
+        )
+        close_old_connections()
+        return response.status_code
+
+    with ThreadPoolExecutor(max_workers=2) as executor:
+        tick_future = executor.submit(tick)
+        delete_future = executor.submit(delete)
+        tick_result = tick_future.result(timeout=10)
+        delete_status = delete_future.result(timeout=10)
+
+    assert tick_result in {"Advance", "Wait"}
+    assert delete_status in {204, 409}
+    assert FeatureFlag.objects.filter(pk=flag.pk).exists()

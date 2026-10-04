@@ -1,17 +1,18 @@
 import { expectLogic } from 'kea-test-utils'
 
-import { projectsFeatureFlagsList, projectsFeatureFlagsPartialUpdate } from './generated/api'
+import { projectsFeatureFlagsDisableCreate, projectsFeatureFlagsList } from './generated/api'
 import { featureFlagsLogic } from './featureFlagsLogic'
 import { featureFlagFixture } from './testFixtures'
 import { resetKeaTestContext } from './testSetup'
 
 jest.mock('./generated/api', () => ({
+    projectsFeatureFlagsDisableCreate: jest.fn(),
+    projectsFeatureFlagsEnableCreate: jest.fn(),
     projectsFeatureFlagsList: jest.fn(),
-    projectsFeatureFlagsPartialUpdate: jest.fn(),
 }))
 
 const mockList = jest.mocked(projectsFeatureFlagsList)
-const mockPartialUpdate = jest.mocked(projectsFeatureFlagsPartialUpdate)
+const mockDisable = jest.mocked(projectsFeatureFlagsDisableCreate)
 
 describe('featureFlagsLogic', () => {
     beforeEach(() => {
@@ -45,10 +46,10 @@ describe('featureFlagsLogic', () => {
         unmount()
     })
 
-    test('patches active state and reloads the list', async () => {
+    test('uses the dedicated disable action and reloads the list', async () => {
         const flag = featureFlagFixture()
         mockList.mockResolvedValue({ data: [flag] } as never)
-        mockPartialUpdate.mockResolvedValue({ data: { ...flag, active: false } } as never)
+        mockDisable.mockResolvedValue({ data: { ...flag, active: false } } as never)
 
         const logic = featureFlagsLogic({ teamId: 1 })
         const unmount = logic.mount()
@@ -57,7 +58,7 @@ describe('featureFlagsLogic', () => {
         logic.actions.toggleFlagActive(flag.id, false)
         await expectLogic(logic).toFinishAllListeners()
 
-        expect(mockPartialUpdate).toHaveBeenCalledWith(1, flag.id, { active: false })
+        expect(mockDisable).toHaveBeenCalledWith(1, flag.id)
         expect(mockList).toHaveBeenCalledTimes(2)
         unmount()
     })

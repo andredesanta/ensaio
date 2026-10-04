@@ -26,6 +26,7 @@ export interface RolloutPlan {
     /** @nullable */
     readonly hold_started_at: string | null
     guardrail: Guardrail
+    readonly version: number
     readonly recent_samples: readonly GuardrailSample[]
     readonly created_at: string
 }

@@ -26,6 +26,9 @@
                 "security": [
                     {
                         "cookieAuth": []
+                    },
+                    {
+                        "automationBearer": []
                     }
                 ],
                 "responses": {
@@ -42,7 +45,8 @@
                         },
                         "description": ""
                     }
-                }
+                },
+                "x-product": "feature_flags"
             },
             "post": {
                 "operationId": "projects_feature_flags_create",
@@ -83,6 +87,9 @@
                 "security": [
                     {
                         "cookieAuth": []
+                    },
+                    {
+                        "automationBearer": []
                     }
                 ],
                 "responses": {
@@ -96,7 +103,8 @@
                         },
                         "description": ""
                     }
-                }
+                },
+                "x-product": "feature_flags"
             }
         },
         "/api/projects/{team_id}/feature_flags/{id}/": {
@@ -128,6 +136,9 @@
                 "security": [
                     {
                         "cookieAuth": []
+                    },
+                    {
+                        "automationBearer": []
                     }
                 ],
                 "responses": {
@@ -141,7 +152,8 @@
                         },
                         "description": ""
                     }
-                }
+                },
+                "x-product": "feature_flags"
             },
             "put": {
                 "operationId": "projects_feature_flags_update",
@@ -172,17 +184,17 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/FeatureFlagRequest"
+                                "$ref": "#/components/schemas/FeatureFlagUpdateRequest"
                             }
                         },
                         "application/x-www-form-urlencoded": {
                             "schema": {
-                                "$ref": "#/components/schemas/FeatureFlagRequest"
+                                "$ref": "#/components/schemas/FeatureFlagUpdateRequest"
                             }
                         },
                         "multipart/form-data": {
                             "schema": {
-                                "$ref": "#/components/schemas/FeatureFlagRequest"
+                                "$ref": "#/components/schemas/FeatureFlagUpdateRequest"
                             }
                         }
                     },
@@ -191,6 +203,9 @@
                 "security": [
                     {
                         "cookieAuth": []
+                    },
+                    {
+                        "automationBearer": []
                     }
                 ],
                 "responses": {
@@ -198,13 +213,14 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/FeatureFlag"
+                                    "$ref": "#/components/schemas/FeatureFlagUpdate"
                                 }
                             }
                         },
                         "description": ""
                     }
-                }
+                },
+                "x-product": "feature_flags"
             },
             "patch": {
                 "operationId": "projects_feature_flags_partial_update",
@@ -235,17 +251,17 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/PatchedFeatureFlagRequest"
+                                "$ref": "#/components/schemas/PatchedFeatureFlagUpdateRequest"
                             }
                         },
                         "application/x-www-form-urlencoded": {
                             "schema": {
-                                "$ref": "#/components/schemas/PatchedFeatureFlagRequest"
+                                "$ref": "#/components/schemas/PatchedFeatureFlagUpdateRequest"
                             }
                         },
                         "multipart/form-data": {
                             "schema": {
-                                "$ref": "#/components/schemas/PatchedFeatureFlagRequest"
+                                "$ref": "#/components/schemas/PatchedFeatureFlagUpdateRequest"
                             }
                         }
                     }
@@ -253,6 +269,9 @@
                 "security": [
                     {
                         "cookieAuth": []
+                    },
+                    {
+                        "automationBearer": []
                     }
                 ],
                 "responses": {
@@ -260,13 +279,14 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/FeatureFlag"
+                                    "$ref": "#/components/schemas/FeatureFlagUpdate"
                                 }
                             }
                         },
                         "description": ""
                     }
-                }
+                },
+                "x-product": "feature_flags"
             },
             "delete": {
                 "operationId": "projects_feature_flags_destroy",
@@ -296,13 +316,115 @@
                 "security": [
                     {
                         "cookieAuth": []
+                    },
+                    {
+                        "automationBearer": []
                     }
                 ],
                 "responses": {
                     "204": {
                         "description": "No response body"
                     }
-                }
+                },
+                "x-product": "feature_flags"
+            }
+        },
+        "/api/projects/{team_id}/feature_flags/{id}/disable/": {
+            "post": {
+                "operationId": "projects_feature_flags_disable_create",
+                "description": "Make the project id in the URL an unavoidable queryset boundary.",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "description": "A unique integer value identifying this feature flag.",
+                        "required": true
+                    },
+                    {
+                        "in": "path",
+                        "name": "team_id",
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "projects"
+                ],
+                "security": [
+                    {
+                        "cookieAuth": []
+                    },
+                    {
+                        "automationBearer": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/FeatureFlag"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                },
+                "x-product": "feature_flags"
+            }
+        },
+        "/api/projects/{team_id}/feature_flags/{id}/enable/": {
+            "post": {
+                "operationId": "projects_feature_flags_enable_create",
+                "description": "Make the project id in the URL an unavoidable queryset boundary.",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "description": "A unique integer value identifying this feature flag.",
+                        "required": true
+                    },
+                    {
+                        "in": "path",
+                        "name": "team_id",
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "projects"
+                ],
+                "security": [
+                    {
+                        "cookieAuth": []
+                    },
+                    {
+                        "automationBearer": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/FeatureFlag"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                },
+                "x-product": "feature_flags"
             }
         },
         "/api/projects/{team_id}/feature_flags/{id}/guardrail_samples/": {
@@ -354,6 +476,9 @@
                 "security": [
                     {
                         "cookieAuth": []
+                    },
+                    {
+                        "automationBearer": []
                     }
                 ],
                 "responses": {
@@ -367,7 +492,8 @@
                         },
                         "description": ""
                     }
-                }
+                },
+                "x-product": "feature_flags"
             }
         },
         "/api/projects/{team_id}/feature_flags/{id}/rollout_plan/": {
@@ -399,6 +525,9 @@
                 "security": [
                     {
                         "cookieAuth": []
+                    },
+                    {
+                        "automationBearer": []
                     }
                 ],
                 "responses": {
@@ -413,9 +542,17 @@
                         "description": ""
                     },
                     "404": {
-                        "description": "No rollout plan."
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/RolloutPlanNotFound"
+                                }
+                            }
+                        },
+                        "description": ""
                     }
-                }
+                },
+                "x-product": "feature_flags"
             },
             "put": {
                 "operationId": "projects_feature_flags_rollout_plan_update",
@@ -446,17 +583,17 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/RolloutPlanRequest"
+                                "$ref": "#/components/schemas/RolloutPlanMutationRequest"
                             }
                         },
                         "application/x-www-form-urlencoded": {
                             "schema": {
-                                "$ref": "#/components/schemas/RolloutPlanRequest"
+                                "$ref": "#/components/schemas/RolloutPlanMutationRequest"
                             }
                         },
                         "multipart/form-data": {
                             "schema": {
-                                "$ref": "#/components/schemas/RolloutPlanRequest"
+                                "$ref": "#/components/schemas/RolloutPlanMutationRequest"
                             }
                         }
                     },
@@ -465,6 +602,9 @@
                 "security": [
                     {
                         "cookieAuth": []
+                    },
+                    {
+                        "automationBearer": []
                     }
                 ],
                 "responses": {
@@ -488,12 +628,29 @@
                         },
                         "description": ""
                     }
-                }
+                },
+                "x-product": "feature_flags"
             },
             "delete": {
                 "operationId": "projects_feature_flags_rollout_plan_destroy",
                 "description": "Make the project id in the URL an unavoidable queryset boundary.",
                 "parameters": [
+                    {
+                        "in": "query",
+                        "name": "expected_plan_id",
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "required": true
+                    },
+                    {
+                        "in": "query",
+                        "name": "expected_version",
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "required": true
+                    },
                     {
                         "in": "path",
                         "name": "id",
@@ -518,13 +675,86 @@
                 "security": [
                     {
                         "cookieAuth": []
+                    },
+                    {
+                        "automationBearer": []
                     }
                 ],
                 "responses": {
                     "204": {
                         "description": "Rollout plan deleted."
                     }
-                }
+                },
+                "x-product": "feature_flags"
+            }
+        },
+        "/api/projects/{team_id}/feature_flags/{id}/set_rollout_percentage/": {
+            "post": {
+                "operationId": "projects_feature_flags_set_rollout_percentage_create",
+                "description": "Make the project id in the URL an unavoidable queryset boundary.",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "description": "A unique integer value identifying this feature flag.",
+                        "required": true
+                    },
+                    {
+                        "in": "path",
+                        "name": "team_id",
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "projects"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/SetRolloutPercentageRequest"
+                            }
+                        },
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/SetRolloutPercentageRequest"
+                            }
+                        },
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/SetRolloutPercentageRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "security": [
+                    {
+                        "cookieAuth": []
+                    },
+                    {
+                        "automationBearer": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/FeatureFlag"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                },
+                "x-product": "feature_flags"
             }
         },
         "/api/projects/{team_id}/feature_flags/{id}/trace/": {
@@ -576,6 +806,9 @@
                 "security": [
                     {
                         "cookieAuth": []
+                    },
+                    {
+                        "automationBearer": []
                     }
                 ],
                 "responses": {
@@ -589,7 +822,66 @@
                         },
                         "description": ""
                     }
-                }
+                },
+                "x-product": "feature_flags"
+            }
+        },
+        "/api/projects/{team_id}/feature_flags/by_key/": {
+            "get": {
+                "operationId": "projects_feature_flags_by_key_retrieve",
+                "description": "Make the project id in the URL an unavoidable queryset boundary.",
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "key",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "required": true
+                    },
+                    {
+                        "in": "path",
+                        "name": "team_id",
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "projects"
+                ],
+                "security": [
+                    {
+                        "cookieAuth": []
+                    },
+                    {
+                        "automationBearer": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/FeatureFlag"
+                                }
+                            }
+                        },
+                        "description": ""
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/FlagNotFound"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                },
+                "x-product": "feature_flags"
             }
         },
         "/api/schema/": {
@@ -813,7 +1105,8 @@
                     "401": {
                         "description": "Unknown public project token."
                     }
-                }
+                },
+                "x-product": "feature_flags"
             }
         },
         "/flags/definitions": {
@@ -860,7 +1153,8 @@
                     "401": {
                         "description": "Missing or invalid definitions secret."
                     }
-                }
+                },
+                "x-product": "feature_flags"
             }
         }
     },
@@ -1079,6 +1373,102 @@
                     "key"
                 ]
             },
+            "FeatureFlagUpdate": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "readOnly": true
+                    },
+                    "team_id": {
+                        "type": "integer",
+                        "readOnly": true
+                    },
+                    "key": {
+                        "type": "string",
+                        "maxLength": 400,
+                        "pattern": "^[-a-zA-Z0-9_]+$"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "active": {
+                        "type": "boolean"
+                    },
+                    "deleted": {
+                        "type": "boolean",
+                        "readOnly": true
+                    },
+                    "version": {
+                        "type": "integer",
+                        "readOnly": true
+                    },
+                    "filters": {
+                        "$ref": "#/components/schemas/Filters"
+                    },
+                    "rollout_plan_status": {
+                        "nullable": true,
+                        "readOnly": true,
+                        "oneOf": [
+                            {
+                                "$ref": "#/components/schemas/RolloutStatusEnum"
+                            },
+                            {
+                                "$ref": "#/components/schemas/NullEnum"
+                            }
+                        ]
+                    },
+                    "created_by_id": {
+                        "type": "integer",
+                        "readOnly": true,
+                        "nullable": true
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "readOnly": true
+                    }
+                },
+                "required": [
+                    "created_at",
+                    "created_by_id",
+                    "deleted",
+                    "id",
+                    "key",
+                    "rollout_plan_status",
+                    "team_id",
+                    "version"
+                ]
+            },
+            "FeatureFlagUpdateRequest": {
+                "type": "object",
+                "properties": {
+                    "key": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 400,
+                        "pattern": "^[-a-zA-Z0-9_]+$"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "active": {
+                        "type": "boolean"
+                    },
+                    "filters": {
+                        "$ref": "#/components/schemas/FiltersRequest"
+                    },
+                    "expected_version": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "writeOnly": true
+                    }
+                },
+                "required": [
+                    "expected_version",
+                    "key"
+                ]
+            },
             "Filters": {
                 "type": "object",
                 "description": "Reject misspelled configuration instead of silently dropping it.",
@@ -1199,6 +1589,28 @@
                     "code",
                     "condition_index"
                 ]
+            },
+            "FlagNotFound": {
+                "type": "object",
+                "properties": {
+                    "detail": {
+                        "type": "string"
+                    },
+                    "code": {
+                        "$ref": "#/components/schemas/FlagNotFoundCodeEnum"
+                    }
+                },
+                "required": [
+                    "code",
+                    "detail"
+                ]
+            },
+            "FlagNotFoundCodeEnum": {
+                "enum": [
+                    "flag_not_found"
+                ],
+                "type": "string",
+                "description": "* `flag_not_found` - flag_not_found"
             },
             "FlagsRequestRequest": {
                 "type": "object",
@@ -1452,7 +1864,7 @@
                 "type": "string",
                 "description": "* `exact` - exact\n* `is_not` - is_not\n* `icontains` - icontains\n* `not_icontains` - not_icontains\n* `gt` - gt\n* `gte` - gte\n* `lt` - lt\n* `lte` - lte\n* `in` - in\n* `not_in` - not_in\n* `is_set` - is_set\n* `is_not_set` - is_not_set"
             },
-            "PatchedFeatureFlagRequest": {
+            "PatchedFeatureFlagUpdateRequest": {
                 "type": "object",
                 "properties": {
                     "key": {
@@ -1469,8 +1881,16 @@
                     },
                     "filters": {
                         "$ref": "#/components/schemas/FiltersRequest"
+                    },
+                    "expected_version": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "writeOnly": true
                     }
-                }
+                },
+                "required": [
+                    "expected_version"
+                ]
             },
             "PropertyFilter": {
                 "type": "object",
@@ -1629,6 +2049,10 @@
                     "guardrail": {
                         "$ref": "#/components/schemas/Guardrail"
                     },
+                    "version": {
+                        "type": "integer",
+                        "readOnly": true
+                    },
                     "recent_samples": {
                         "type": "array",
                         "items": {
@@ -1653,10 +2077,11 @@
                     "managed_group_index",
                     "phase_entered_at",
                     "phases",
-                    "recent_samples"
+                    "recent_samples",
+                    "version"
                 ]
             },
-            "RolloutPlanRequest": {
+            "RolloutPlanMutationRequest": {
                 "type": "object",
                 "properties": {
                     "status": {
@@ -1680,13 +2105,47 @@
                     },
                     "guardrail": {
                         "$ref": "#/components/schemas/GuardrailRequest"
+                    },
+                    "expected_plan_id": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "nullable": true
+                    },
+                    "expected_version": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "nullable": true
                     }
                 },
                 "required": [
+                    "expected_plan_id",
+                    "expected_version",
                     "guardrail",
                     "managed_group_index",
                     "phases"
                 ]
+            },
+            "RolloutPlanNotFound": {
+                "type": "object",
+                "properties": {
+                    "detail": {
+                        "type": "string"
+                    },
+                    "code": {
+                        "$ref": "#/components/schemas/RolloutPlanNotFoundCodeEnum"
+                    }
+                },
+                "required": [
+                    "code",
+                    "detail"
+                ]
+            },
+            "RolloutPlanNotFoundCodeEnum": {
+                "enum": [
+                    "rollout_plan_not_found"
+                ],
+                "type": "string",
+                "description": "* `rollout_plan_not_found` - rollout_plan_not_found"
             },
             "RolloutStatusEnum": {
                 "enum": [
@@ -1699,6 +2158,31 @@
                 ],
                 "type": "string",
                 "description": "* `DRAFT` - DRAFT\n* `ACTIVE` - ACTIVE\n* `HOLDING` - HOLDING\n* `PAUSED` - PAUSED\n* `COMPLETED` - COMPLETED\n* `REVERTED` - REVERTED"
+            },
+            "SetRolloutPercentageRequest": {
+                "type": "object",
+                "description": "Reject misspelled configuration instead of silently dropping it.",
+                "properties": {
+                    "condition_index": {
+                        "type": "integer",
+                        "minimum": 0
+                    },
+                    "rollout_percentage": {
+                        "type": "number",
+                        "format": "double",
+                        "maximum": 100,
+                        "minimum": 0
+                    },
+                    "expected_version": {
+                        "type": "integer",
+                        "minimum": 1
+                    }
+                },
+                "required": [
+                    "condition_index",
+                    "expected_version",
+                    "rollout_percentage"
+                ]
             },
             "StepEnum": {
                 "enum": [
@@ -1842,6 +2326,12 @@
             }
         },
         "securitySchemes": {
+            "automationBearer": {
+                "type": "http",
+                "scheme": "bearer",
+                "bearerFormat": "ens_pat_<selector>.<secret>",
+                "description": "Project-scoped Ensaio automation token."
+            },
             "cookieAuth": {
                 "type": "apiKey",
                 "in": "cookie",

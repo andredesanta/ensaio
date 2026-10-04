@@ -80,11 +80,19 @@ def _samples(plan: RolloutPlan, state: PlanState, now: datetime) -> tuple[Sample
 def tick_rollout_plan(plan_id: int, now: datetime) -> Decision:
     """Lock, decide, and apply one plan atomically."""
 
+    flag_id = RolloutPlan.objects.filter(pk=plan_id).values_list("flag_id", flat=True).first()
+    if flag_id is None:
+        return Wait()
+
     with transaction.atomic():
-        plan = RolloutPlan.objects.select_for_update().select_related("flag").get(pk=plan_id)
+        flag = FeatureFlag.objects.select_for_update().filter(pk=flag_id).first()
+        if flag is None:
+            return Wait()
+        plan = RolloutPlan.objects.select_for_update().filter(pk=plan_id, flag_id=flag.pk).first()
+        if plan is None:
+            return Wait()
         if plan.status not in {RolloutPlan.Status.ACTIVE, RolloutPlan.Status.HOLDING}:
             return Wait()
-        flag = FeatureFlag.objects.select_for_update().get(pk=plan.flag_id)
         state = _plan_state(plan)
         decision = decide(state, _samples(plan, state, now), now)
 
@@ -106,6 +114,12 @@ def tick_rollout_plan(plan_id: int, now: datetime) -> Decision:
             plan.hold_reason = ""
             plan.hold_started_at = None
         elif isinstance(decision, Hold):
+            if (
+                plan.status == RolloutPlan.Status.HOLDING
+                and plan.hold_reason == decision.reason
+                and plan.hold_started_at is not None
+            ):
+                return decision
             plan.status = RolloutPlan.Status.HOLDING
             plan.hold_reason = decision.reason
             if plan.hold_started_at is None:

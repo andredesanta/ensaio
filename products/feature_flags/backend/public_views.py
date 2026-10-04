@@ -48,6 +48,7 @@ class FlagsView(APIView):
     permission_classes = [AllowAny]
 
     @extend_schema(
+        extensions={"x-product": "feature_flags"},
         parameters=[
             OpenApiParameter(
                 name="v",
@@ -130,6 +131,7 @@ class FlagDefinitionsView(APIView):
     permission_classes = [AllowAny]
 
     @extend_schema(
+        extensions={"x-product": "feature_flags"},
         parameters=[
             OpenApiParameter(
                 name="Authorization",

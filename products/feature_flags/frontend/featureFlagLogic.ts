@@ -6,17 +6,25 @@ import { router } from 'kea-router'
 import { urls } from '../manifest'
 import { apiErrorMessage } from './apiClient'
 import { featureFlagToRequest, flagFormErrors, newFeatureFlag } from './flagForm'
+import type { FeatureFlagForm } from './flagForm'
 import {
     projectsFeatureFlagsCreate,
     projectsFeatureFlagsPartialUpdate,
     projectsFeatureFlagsRetrieve,
 } from './generated/api'
-import type { FeatureFlag, FeatureFlagRequest } from './generated/models'
+import type { FeatureFlag } from './generated/models'
 import type { featureFlagLogicType } from './featureFlagLogicType'
 
 export type FeatureFlagLogicProps = {
     teamId: number
     flagId: number | 'new'
+}
+
+function requiredExpectedVersion(value: number | undefined): number {
+    if (value === undefined) {
+        throw new Error('Reload the flag before saving because its version is missing.')
+    }
+    return value
 }
 
 export const featureFlagLogic = kea<featureFlagLogicType>([
@@ -60,15 +68,21 @@ export const featureFlagLogic = kea<featureFlagLogicType>([
         flagForm: {
             defaults: newFeatureFlag(),
             errors: flagFormErrors,
-            submit: async (formValues: FeatureFlagRequest) => {
+            submit: async (formValues: FeatureFlagForm) => {
                 logicActions.setSaveError(null)
                 try {
+                    const { expected_version: expectedVersion, ...createRequest } = formValues
                     const response =
                         logicProps.flagId === 'new'
-                            ? await projectsFeatureFlagsCreate(logicProps.teamId, formValues)
-                            : await projectsFeatureFlagsPartialUpdate(logicProps.teamId, logicProps.flagId, formValues)
+                            ? await projectsFeatureFlagsCreate(logicProps.teamId, createRequest)
+                            : await projectsFeatureFlagsPartialUpdate(logicProps.teamId, logicProps.flagId, {
+                                  ...formValues,
+                                  expected_version: requiredExpectedVersion(expectedVersion),
+                              })
+                    const savedForm = featureFlagToRequest(response.data)
+                    logicActions.resetFlagForm(savedForm)
                     logicActions.flagSaved(response.data)
-                    return featureFlagToRequest(response.data)
+                    return savedForm
                 } catch (error) {
                     logicActions.setSaveError(apiErrorMessage(error))
                     throw error

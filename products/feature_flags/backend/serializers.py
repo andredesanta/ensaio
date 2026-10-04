@@ -40,6 +40,16 @@ TRACE_STEPS = (
 ROLLOUT_STATUSES = tuple(RolloutPlan.Status.values)
 
 
+class FlagNotFoundSerializer(serializers.Serializer[Any]):
+    detail = serializers.CharField()
+    code = serializers.ChoiceField(choices=("flag_not_found",))
+
+
+class RolloutPlanNotFoundSerializer(serializers.Serializer[Any]):
+    detail = serializers.CharField()
+    code = serializers.ChoiceField(choices=("rollout_plan_not_found",))
+
+
 class StrictSerializer(serializers.Serializer[Any]):
     """Reject misspelled configuration instead of silently dropping it."""
 
@@ -138,7 +148,7 @@ class FeatureFlagSerializer(serializers.ModelSerializer[FeatureFlag]):
 
     class Meta:
         model = FeatureFlag
-        fields = (
+        fields: tuple[str, ...] = (
             "id",
             "team_id",
             "key",
@@ -185,6 +195,29 @@ class FeatureFlagSerializer(serializers.ModelSerializer[FeatureFlag]):
             return instance.rollout_plan.status
         except RolloutPlan.DoesNotExist:
             return None
+
+
+class FeatureFlagUpdateSerializer(FeatureFlagSerializer):
+    expected_version = serializers.IntegerField(min_value=1, write_only=True)
+
+    class Meta(FeatureFlagSerializer.Meta):
+        fields: tuple[str, ...] = (*FeatureFlagSerializer.Meta.fields, "expected_version")
+
+    def update(self, instance: FeatureFlag, validated_data: dict[str, Any]) -> FeatureFlag:
+        validated_data.pop("expected_version")
+        return super().update(instance, validated_data)
+
+
+class MetadataUpdateSerializer(StrictSerializer):
+    key = serializers.CharField(required=False, allow_blank=False, max_length=400)
+    name = serializers.CharField(required=False, allow_blank=True)
+    expected_version = serializers.IntegerField(min_value=1)
+
+
+class SetRolloutPercentageSerializer(StrictSerializer):
+    condition_index = serializers.IntegerField(min_value=0)
+    rollout_percentage = PercentageField(min_value=0, max_value=100)
+    expected_version = serializers.IntegerField(min_value=1)
 
 
 class TraceRequestSerializer(StrictSerializer):
@@ -306,7 +339,7 @@ class RolloutPlanSerializer(serializers.ModelSerializer[RolloutPlan]):
 
     class Meta:
         model = RolloutPlan
-        fields = (
+        fields: tuple[str, ...] = (
             "id",
             "flag_id",
             "status",
@@ -317,6 +350,7 @@ class RolloutPlanSerializer(serializers.ModelSerializer[RolloutPlan]):
             "hold_reason",
             "hold_started_at",
             "guardrail",
+            "version",
             "recent_samples",
             "created_at",
         )
@@ -327,6 +361,7 @@ class RolloutPlanSerializer(serializers.ModelSerializer[RolloutPlan]):
             "phase_entered_at",
             "hold_reason",
             "hold_started_at",
+            "version",
             "recent_samples",
             "created_at",
         )
@@ -370,3 +405,21 @@ class RolloutPlanSerializer(serializers.ModelSerializer[RolloutPlan]):
     def get_recent_samples(self, instance: RolloutPlan) -> list[dict[str, Any]]:
         samples = instance.samples.order_by("-recorded_at", "-id")[:5]
         return cast(list[dict[str, Any]], GuardrailSampleSerializer(samples, many=True).data)
+
+
+class RolloutPlanMutationSerializer(RolloutPlanSerializer):
+    expected_plan_id = serializers.IntegerField(min_value=1, allow_null=True)
+    expected_version = serializers.IntegerField(min_value=1, allow_null=True)
+
+    class Meta(RolloutPlanSerializer.Meta):
+        fields: tuple[str, ...] = (*RolloutPlanSerializer.Meta.fields, "expected_plan_id", "expected_version")
+
+
+class PlanMutationConcurrencySerializer(StrictSerializer):
+    expected_plan_id = serializers.IntegerField(min_value=1, allow_null=True)
+    expected_version = serializers.IntegerField(min_value=1, allow_null=True)
+
+
+class PlanConcurrencySerializer(StrictSerializer):
+    expected_plan_id = serializers.IntegerField(min_value=1)
+    expected_version = serializers.IntegerField(min_value=1)

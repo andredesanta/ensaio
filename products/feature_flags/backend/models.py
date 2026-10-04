@@ -3,6 +3,8 @@ from collections.abc import Iterable
 
 from django.conf import settings
 from django.contrib.auth.hashers import check_password, make_password
+from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import F, Q
 from django.db.models.base import ModelBase
@@ -12,6 +14,8 @@ from products.feature_flags.backend.definitions_cache import schedule_definition
 
 PUBLIC_TOKEN_PREFIX = "ens_pub_"
 SECRET_TOKEN_PREFIX = "ens_sec_"
+AUTOMATION_TOKEN_PREFIX = "ens_pat_"
+AUTOMATION_TOKEN_SCOPES = ("feature_flag:read", "feature_flag:write")
 
 
 def generate_public_api_token() -> str:
@@ -38,6 +42,15 @@ def default_filters() -> dict[str, object]:
     return {"groups": []}
 
 
+def validate_automation_scopes(value: object) -> None:
+    if not isinstance(value, list) or not value:
+        raise ValidationError("Scopes must be a non-empty list.")
+    if any(not isinstance(scope, str) or scope not in AUTOMATION_TOKEN_SCOPES for scope in value):
+        raise ValidationError(f"Scopes may contain only: {', '.join(AUTOMATION_TOKEN_SCOPES)}.")
+    if len(value) != len(set(value)):
+        raise ValidationError("Scopes must not contain duplicates.")
+
+
 class Team(models.Model):
     name = models.CharField(max_length=200)
     api_token = models.CharField(max_length=64, unique=True, default=generate_public_api_token, editable=False)
@@ -56,6 +69,47 @@ class Team(models.Model):
 
     def check_secret_api_token(self, token: str) -> bool:
         return token.startswith(SECRET_TOKEN_PREFIX) and check_password(token, self.secret_api_token)
+
+
+class AutomationToken(models.Model):
+    team = models.ForeignKey(Team, on_delete=models.CASCADE, related_name="automation_tokens")
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="automation_tokens")
+    name = models.CharField(max_length=200)
+    selector = models.CharField(max_length=22, unique=True, editable=False)
+    secret_hash = models.CharField(max_length=128, editable=False)
+    scopes = models.JSONField(validators=[validate_automation_scopes])
+    created_at = models.DateTimeField(auto_now_add=True)
+    revoked_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ["id"]
+
+    def __str__(self) -> str:
+        return f"{self.name} ({self.selector})"
+
+    @classmethod
+    def issue(cls, *, team: Team, user: User, name: str, scopes: list[str]) -> tuple["AutomationToken", str]:
+        selector = secrets.token_urlsafe(16)
+        secret = secrets.token_urlsafe(32)
+        raw_token = f"{AUTOMATION_TOKEN_PREFIX}{selector}.{secret}"
+        token = cls(
+            team=team,
+            user=user,
+            name=name,
+            selector=selector,
+            secret_hash=make_password(secret),
+            scopes=scopes,
+        )
+        token.full_clean()
+        token.save(force_insert=True)
+        return token, raw_token
+
+    def check_secret(self, secret: str) -> bool:
+        return check_password(secret, self.secret_hash)
+
+    @property
+    def is_revoked(self) -> bool:
+        return self.revoked_at is not None
 
 
 class FeatureFlag(models.Model):
@@ -138,10 +192,33 @@ class RolloutPlan(models.Model):
     hold_reason = models.CharField(max_length=100, blank=True)
     hold_started_at = models.DateTimeField(null=True, blank=True)
     guardrail = models.JSONField()
+    version = models.PositiveIntegerField(default=1, editable=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self) -> str:
         return f"{self.flag.key}: {self.status}"
+
+    def save(
+        self,
+        *,
+        force_insert: bool | tuple[ModelBase, ...] = False,
+        force_update: bool = False,
+        using: str | None = None,
+        update_fields: Iterable[str] | None = None,
+    ) -> None:
+        is_update = not self._state.adding
+        if is_update:
+            self.version = F("version") + 1
+            if update_fields is not None:
+                update_fields = {*update_fields, "version"}
+        super().save(
+            force_insert=force_insert,
+            force_update=force_update,
+            using=using,
+            update_fields=update_fields,
+        )
+        if is_update:
+            self.refresh_from_db(fields=["version"], using=using)
 
 
 class GuardrailSample(models.Model):

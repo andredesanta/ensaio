@@ -102,13 +102,31 @@ def test_patch_updates_fields_and_advances_version() -> None:
     team = Team.objects.create(name="Growth")
     flag = FeatureFlag.objects.create(team=team, key="checkout", created_by=user)
 
-    response = client.patch(_detail_url(team, flag), {"name": "Checkout v2"}, format="json")
+    response = client.patch(
+        _detail_url(team, flag),
+        {"name": "Checkout v2", "expected_version": flag.version},
+        format="json",
+    )
 
     assert response.status_code == 200, response.data
     flag.refresh_from_db()
     assert flag.name == "Checkout v2"
     assert flag.version == 2
     assert response.data["version"] == 2
+
+
+def test_patch_rejects_a_missing_concurrency_version_instead_of_raising() -> None:
+    client, user = _authenticated_client()
+    team = Team.objects.create(name="Growth")
+    flag = FeatureFlag.objects.create(team=team, key="checkout", created_by=user)
+
+    response = client.patch(_detail_url(team, flag), {"name": "Unsafe overwrite"}, format="json")
+
+    assert response.status_code == 400
+    assert response.data == {"expected_version": ["This field is required."]}
+    flag.refresh_from_db()
+    assert flag.name == ""
+    assert flag.version == 1
 
 
 def test_delete_soft_deletes_and_frees_key_for_reuse() -> None:

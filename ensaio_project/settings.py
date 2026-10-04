@@ -104,13 +104,13 @@ CSRF_TRUSTED_ORIGINS = [
     "http://127.0.0.1:5173",
 ]
 
-# Management API (M2) is session-authenticated. A view that must be public,
-# such as POST /flags, will set its own permission class. The default stays
-# closed so a new view is not accidentally anonymous.
+# Management API accepts either its existing CSRF-protected browser session or
+# a project-scoped automation Bearer token. A public view such as POST /flags
+# sets its own classes. The default stays closed so a new view is not anonymous.
 REST_FRAMEWORK = {
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
     "DEFAULT_AUTHENTICATION_CLASSES": [
-        "rest_framework.authentication.SessionAuthentication",
+        "products.feature_flags.backend.agent_authentication.SessionOrAutomationAuthentication",
     ],
     "DEFAULT_PERMISSION_CLASSES": [
         "rest_framework.permissions.IsAuthenticated",
@@ -128,11 +128,32 @@ SPECTACULAR_SETTINGS = {
     # these as create/update inputs instead of forcing the console to invent
     # values for id, team_id, version, and timestamps.
     "COMPONENT_SPLIT_REQUEST": True,
+    # drf-spectacular makes every PATCH property optional. Ensaio's optimistic
+    # concurrency fields are the exception: stale-write protection is mandatory.
+    "POSTPROCESSING_HOOKS": [
+        "drf_spectacular.hooks.postprocess_schema_enums",
+        "products.feature_flags.backend.schema.require_concurrency_fields",
+    ],
     # Reused choice sets appear through different serializer fields. Stable
     # names prevent generated TypeScript enums from churning as routes grow.
     "ENUM_NAME_OVERRIDES": {
         "EvaluationReasonEnum": "products.feature_flags.backend.serializers.EVALUATION_REASONS",
         "RolloutStatusEnum": "products.feature_flags.backend.serializers.ROLLOUT_STATUSES",
+    },
+    "APPEND_COMPONENTS": {
+        "securitySchemes": {
+            "automationBearer": {
+                "type": "http",
+                "scheme": "bearer",
+                "bearerFormat": "ens_pat_<selector>.<secret>",
+                "description": "Project-scoped Ensaio automation token.",
+            },
+            "cookieAuth": {
+                "type": "apiKey",
+                "in": "cookie",
+                "name": "sessionid",
+            },
+        }
     },
 }
 

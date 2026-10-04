@@ -2,7 +2,11 @@ import { actions, afterMount, kea, key, listeners, path, props, reducers, select
 import { loaders } from 'kea-loaders'
 
 import { apiErrorMessage } from './apiClient'
-import { projectsFeatureFlagsList, projectsFeatureFlagsPartialUpdate } from './generated/api'
+import {
+    projectsFeatureFlagsDisableCreate,
+    projectsFeatureFlagsEnableCreate,
+    projectsFeatureFlagsList,
+} from './generated/api'
 import type { FeatureFlag } from './generated/models'
 import type { featureFlagsLogicType } from './featureFlagsLogicType'
 
@@ -61,7 +65,11 @@ export const featureFlagsLogic = kea<featureFlagsLogicType>([
         toggleFlagActive: async ({ id, active }) => {
             logicActions.setMutationError(null)
             try {
-                await projectsFeatureFlagsPartialUpdate(logicProps.teamId, id, { active })
+                if (active) {
+                    await projectsFeatureFlagsEnableCreate(logicProps.teamId, id)
+                } else {
+                    await projectsFeatureFlagsDisableCreate(logicProps.teamId, id)
+                }
                 logicActions.loadFeatureFlags()
             } catch (error) {
                 logicActions.setMutationError(apiErrorMessage(error))

@@ -4,7 +4,7 @@ import type { Logic } from 'kea'
 
 import type { FeatureFlagLogicProps } from './featureFlagLogic'
 import type { FeatureFlag } from './generated/models/index'
-import type { FeatureFlagRequest } from './generated/models/featureFlagRequest'
+import type { FeatureFlagForm } from './flagForm'
 import type { DeepPartial, DeepPartialMap, FieldName, ValidationErrorType } from 'kea-forms'
 
 export interface featureFlagLogicType extends Logic {
@@ -61,10 +61,10 @@ export interface featureFlagLogicType extends Logic {
                 value: any
             }
         }
-        setFlagFormValues: (values: DeepPartial<FeatureFlagRequest>) => {
+        setFlagFormValues: (values: DeepPartial<FeatureFlagForm>) => {
             type: 'set flag form values (products.featureFlags.featureFlagLogic.*)'
             payload: {
-                values: DeepPartial<FeatureFlagRequest>
+                values: DeepPartial<FeatureFlagForm>
             }
         }
         setFlagFormManualErrors: (errors: Record<string, any>) => {
@@ -79,10 +79,10 @@ export interface featureFlagLogicType extends Logic {
                 key: string
             }
         }
-        resetFlagForm: (values?: FeatureFlagRequest) => {
+        resetFlagForm: (values?: FeatureFlagForm) => {
             type: 'reset flag form (products.featureFlags.featureFlagLogic.*)'
             payload: {
-                values?: FeatureFlagRequest
+                values?: FeatureFlagForm
             }
         }
         submitFlagForm: () => {
@@ -91,16 +91,16 @@ export interface featureFlagLogicType extends Logic {
                 value: boolean
             }
         }
-        submitFlagFormRequest: (flagForm: FeatureFlagRequest) => {
+        submitFlagFormRequest: (flagForm: FeatureFlagForm) => {
             type: 'submit flag form request (products.featureFlags.featureFlagLogic.*)'
             payload: {
-                flagForm: FeatureFlagRequest
+                flagForm: FeatureFlagForm
             }
         }
-        submitFlagFormSuccess: (flagForm: FeatureFlagRequest) => {
+        submitFlagFormSuccess: (flagForm: FeatureFlagForm) => {
             type: 'submit flag form success (products.featureFlags.featureFlagLogic.*)'
             payload: {
-                flagForm: FeatureFlagRequest
+                flagForm: FeatureFlagForm
             }
         }
         submitFlagFormFailure: (
@@ -156,13 +156,13 @@ export interface featureFlagLogicType extends Logic {
         loadFeatureFlagSuccess: (featureFlag: FeatureFlag | null, payload?: any) => void
         loadFeatureFlagFailure: (error: string, errorObject?: any) => void
         setFlagFormValue: (key: FieldName, value: any) => void
-        setFlagFormValues: (values: DeepPartial<FeatureFlagRequest>) => void
+        setFlagFormValues: (values: DeepPartial<FeatureFlagForm>) => void
         setFlagFormManualErrors: (errors: Record<string, any>) => void
         touchFlagFormField: (key: string) => void
-        resetFlagForm: (values?: FeatureFlagRequest) => void
+        resetFlagForm: (values?: FeatureFlagForm) => void
         submitFlagForm: () => void
-        submitFlagFormRequest: (flagForm: FeatureFlagRequest) => void
-        submitFlagFormSuccess: (flagForm: FeatureFlagRequest) => void
+        submitFlagFormRequest: (flagForm: FeatureFlagForm) => void
+        submitFlagFormSuccess: (flagForm: FeatureFlagForm) => void
         submitFlagFormFailure: (error: Error, errors: Record<string, any>) => void
     }
     asyncActions: {
@@ -173,13 +173,13 @@ export interface featureFlagLogicType extends Logic {
         loadFeatureFlagSuccess: (featureFlag: FeatureFlag | null, payload?: any) => Promise<any>
         loadFeatureFlagFailure: (error: string, errorObject?: any) => Promise<any>
         setFlagFormValue: (key: FieldName, value: any) => Promise<any>
-        setFlagFormValues: (values: DeepPartial<FeatureFlagRequest>) => Promise<any>
+        setFlagFormValues: (values: DeepPartial<FeatureFlagForm>) => Promise<any>
         setFlagFormManualErrors: (errors: Record<string, any>) => Promise<any>
         touchFlagFormField: (key: string) => Promise<any>
-        resetFlagForm: (values?: FeatureFlagRequest) => Promise<any>
+        resetFlagForm: (values?: FeatureFlagForm) => Promise<any>
         submitFlagForm: () => Promise<any>
-        submitFlagFormRequest: (flagForm: FeatureFlagRequest) => Promise<any>
-        submitFlagFormSuccess: (flagForm: FeatureFlagRequest) => Promise<any>
+        submitFlagFormRequest: (flagForm: FeatureFlagForm) => Promise<any>
+        submitFlagFormSuccess: (flagForm: FeatureFlagForm) => Promise<any>
         submitFlagFormFailure: (error: Error, errors: Record<string, any>) => Promise<any>
     }
     defaults: {
@@ -187,7 +187,7 @@ export interface featureFlagLogicType extends Logic {
         loadError: string | null
         featureFlag: FeatureFlag | null
         featureFlagLoading: boolean
-        flagForm: FeatureFlagRequest
+        flagForm: FeatureFlagForm
         isFlagFormSubmitting: boolean
         showFlagFormErrors: boolean
         flagFormChanged: boolean
@@ -246,7 +246,7 @@ export interface featureFlagLogicType extends Logic {
         loadError: string | null
         featureFlag: FeatureFlag | null
         featureFlagLoading: boolean
-        flagForm: FeatureFlagRequest
+        flagForm: FeatureFlagForm
         isFlagFormSubmitting: boolean
         showFlagFormErrors: boolean
         flagFormChanged: boolean
@@ -258,7 +258,7 @@ export interface featureFlagLogicType extends Logic {
         loadError: (state: string | null, action: any, fullState: any) => string | null
         featureFlag: (state: FeatureFlag | null, action: any, fullState: any) => FeatureFlag | null
         featureFlagLoading: (state: boolean, action: any, fullState: any) => boolean
-        flagForm: (state: FeatureFlagRequest, action: any, fullState: any) => FeatureFlagRequest
+        flagForm: (state: FeatureFlagForm, action: any, fullState: any) => FeatureFlagForm
         isFlagFormSubmitting: (state: boolean, action: any, fullState: any) => boolean
         showFlagFormErrors: (state: boolean, action: any, fullState: any) => boolean
         flagFormChanged: (state: boolean, action: any, fullState: any) => boolean
@@ -270,7 +270,7 @@ export interface featureFlagLogicType extends Logic {
         loadError: string | null
         featureFlag: FeatureFlag | null
         featureFlagLoading: boolean
-        flagForm: FeatureFlagRequest
+        flagForm: FeatureFlagForm
         isFlagFormSubmitting: boolean
         showFlagFormErrors: boolean
         flagFormChanged: boolean
@@ -282,17 +282,17 @@ export interface featureFlagLogicType extends Logic {
         loadError: (state: any, props?: any) => string | null
         featureFlag: (state: any, props?: any) => FeatureFlag | null
         featureFlagLoading: (state: any, props?: any) => boolean
-        flagForm: (state: any, props?: any) => FeatureFlagRequest
+        flagForm: (state: any, props?: any) => FeatureFlagForm
         isFlagFormSubmitting: (state: any, props?: any) => boolean
         showFlagFormErrors: (state: any, props?: any) => boolean
         flagFormChanged: (state: any, props?: any) => boolean
         flagFormTouches: (state: any, props?: any) => Record<string, boolean>
         flagFormManualErrors: (state: any, props?: any) => Record<string, any>
         flagFormTouched: (state: any, props?: any) => boolean
-        flagFormValidationErrors: (state: any, props?: any) => DeepPartialMap<FeatureFlagRequest, ValidationErrorType>
+        flagFormValidationErrors: (state: any, props?: any) => DeepPartialMap<FeatureFlagForm, ValidationErrorType>
         flagFormAllErrors: (state: any, props?: any) => Record<string, any>
         flagFormHasErrors: (state: any, props?: any) => boolean
-        flagFormErrors: (state: any, props?: any) => DeepPartialMap<FeatureFlagRequest, ValidationErrorType>
+        flagFormErrors: (state: any, props?: any) => DeepPartialMap<FeatureFlagForm, ValidationErrorType>
         isFlagFormValid: (state: any, props?: any) => boolean
     }
     sharedListeners: {}
@@ -301,17 +301,17 @@ export interface featureFlagLogicType extends Logic {
         loadError: string | null
         featureFlag: FeatureFlag | null
         featureFlagLoading: boolean
-        flagForm: FeatureFlagRequest
+        flagForm: FeatureFlagForm
         isFlagFormSubmitting: boolean
         showFlagFormErrors: boolean
         flagFormChanged: boolean
         flagFormTouches: Record<string, boolean>
         flagFormManualErrors: Record<string, any>
         flagFormTouched: boolean
-        flagFormValidationErrors: DeepPartialMap<FeatureFlagRequest, ValidationErrorType>
+        flagFormValidationErrors: DeepPartialMap<FeatureFlagForm, ValidationErrorType>
         flagFormAllErrors: Record<string, any>
         flagFormHasErrors: boolean
-        flagFormErrors: DeepPartialMap<FeatureFlagRequest, ValidationErrorType>
+        flagFormErrors: DeepPartialMap<FeatureFlagForm, ValidationErrorType>
         isFlagFormValid: boolean
     }
     _isKea: true

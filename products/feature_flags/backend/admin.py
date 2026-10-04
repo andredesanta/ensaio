@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from products.feature_flags.backend.models import FeatureFlag, GuardrailSample, RolloutPlan, Team
+from products.feature_flags.backend.models import AutomationToken, FeatureFlag, GuardrailSample, RolloutPlan, Team
 
 
 @admin.register(Team)
@@ -8,6 +8,14 @@ class TeamAdmin(admin.ModelAdmin):  # type: ignore[type-arg]
     list_display = ("id", "name", "created_at")
     search_fields = ("name",)
     readonly_fields = ("api_token", "secret_api_token", "created_at")
+
+
+@admin.register(AutomationToken)
+class AutomationTokenAdmin(admin.ModelAdmin):  # type: ignore[type-arg]
+    list_display = ("id", "name", "team", "user", "selector", "revoked_at", "created_at")
+    list_filter = ("team", "revoked_at")
+    search_fields = ("name", "selector", "user__username")
+    readonly_fields = ("selector", "secret_hash", "created_at", "revoked_at")
 
 
 @admin.register(FeatureFlag)

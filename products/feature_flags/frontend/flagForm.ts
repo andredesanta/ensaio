@@ -2,10 +2,13 @@ import type {
     ConditionRequest,
     FeatureFlag,
     FeatureFlagRequest,
+    PatchedFeatureFlagUpdateRequest,
     PropertyFilterRequest,
     VariantRequest,
 } from './generated/models'
 import { OperatorEnum, TypeEnum } from './generated/models'
+
+export type FeatureFlagForm = FeatureFlagRequest & Partial<Pick<PatchedFeatureFlagUpdateRequest, 'expected_version'>>
 
 export const PROPERTY_OPERATORS = Object.values(OperatorEnum)
 
@@ -30,7 +33,7 @@ export function newVariant(key: string, rolloutPercentage: number): VariantReque
     return { key, rollout_percentage: rolloutPercentage }
 }
 
-export function newFeatureFlag(): FeatureFlagRequest {
+export function newFeatureFlag(): FeatureFlagForm {
     return {
         key: '',
         name: '',
@@ -45,11 +48,12 @@ export function newFeatureFlag(): FeatureFlagRequest {
     }
 }
 
-export function featureFlagToRequest(flag: FeatureFlag): FeatureFlagRequest {
+export function featureFlagToRequest(flag: FeatureFlag): FeatureFlagForm {
     return {
         key: flag.key,
         name: flag.name ?? '',
         active: flag.active ?? true,
+        expected_version: flag.version,
         filters:
             flag.filters === undefined
                 ? { groups: [] }
@@ -69,7 +73,7 @@ export function featureFlagToRequest(flag: FeatureFlag): FeatureFlagRequest {
     }
 }
 
-export function flagFormErrors(flag: FeatureFlagRequest): Record<string, string | undefined> {
+export function flagFormErrors(flag: FeatureFlagForm): Record<string, string | undefined> {
     const variants = flag.filters?.multivariate?.variants ?? []
     const variantKeys = variants.map((variant) => variant.key)
     const totalWeight = variants.reduce((sum, variant) => sum + variant.rollout_percentage, 0)

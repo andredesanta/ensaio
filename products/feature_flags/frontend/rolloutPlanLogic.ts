@@ -7,7 +7,11 @@ import {
     projectsFeatureFlagsRolloutPlanRetrieve,
     projectsFeatureFlagsRolloutPlanUpdate,
 } from './generated/api'
-import type { RolloutPlan, RolloutPlanRequest } from './generated/models'
+import type {
+    ProjectsFeatureFlagsRolloutPlanDestroyParams,
+    RolloutPlan,
+    RolloutPlanMutationRequest,
+} from './generated/models'
 import { ComparisonEnum, RolloutStatusEnum } from './generated/models'
 import type { rolloutPlanLogicType } from './rolloutPlanLogicType'
 
@@ -20,8 +24,17 @@ function loaderErrorMessage(error: string, errorObject: unknown): string {
     return errorObject === undefined ? error : apiErrorMessage(errorObject)
 }
 
-export function newRolloutPlan(): RolloutPlanRequest {
+function isRolloutPlanAbsence(error: unknown): boolean {
+    if (!(error instanceof ApiError) || error.status !== 404 || typeof error.body !== 'object' || error.body === null) {
+        return false
+    }
+    return 'code' in error.body && error.body.code === 'rollout_plan_not_found'
+}
+
+export function newRolloutPlan(): RolloutPlanMutationRequest {
     return {
+        expected_plan_id: null,
+        expected_version: null,
         status: RolloutStatusEnum.DRAFT,
         managed_group_index: 0,
         phases: [
@@ -41,8 +54,10 @@ export function newRolloutPlan(): RolloutPlanRequest {
     }
 }
 
-export function rolloutPlanToRequest(plan: RolloutPlan): RolloutPlanRequest {
+export function rolloutPlanToRequest(plan: RolloutPlan): RolloutPlanMutationRequest {
     return {
+        expected_plan_id: plan.id,
+        expected_version: plan.version,
         status: plan.status,
         managed_group_index: plan.managed_group_index,
         phases: plan.phases.map((phase) => ({ ...phase })),
@@ -55,7 +70,7 @@ export const rolloutPlanLogic = kea<rolloutPlanLogicType>([
     key((logicProps) => `${logicProps.teamId}-${logicProps.flagId}`),
     path((logicKey) => ['products', 'featureFlags', 'rolloutPlanLogic', logicKey]),
     actions({
-        setRolloutDraft: (draft: RolloutPlanRequest) => ({ draft }),
+        setRolloutDraft: (draft: RolloutPlanMutationRequest) => ({ draft }),
         setPlanError: (error: string | null) => ({ error }),
     }),
     reducers({
@@ -82,15 +97,18 @@ export const rolloutPlanLogic = kea<rolloutPlanLogicType>([
                             logicProps.teamId,
                             logicProps.flagId
                         )
-                        return response.status === 404 ? null : response.data
+                        if (response.status !== 200) {
+                            throw new ApiError(response.status, response.data)
+                        }
+                        return response.data
                     } catch (error) {
-                        if (error instanceof ApiError && error.status === 404) {
+                        if (isRolloutPlanAbsence(error)) {
                             return null
                         }
                         throw error
                     }
                 },
-                saveRolloutPlan: async (request: RolloutPlanRequest) => {
+                saveRolloutPlan: async (request: RolloutPlanMutationRequest) => {
                     const response = await projectsFeatureFlagsRolloutPlanUpdate(
                         logicProps.teamId,
                         logicProps.flagId,
@@ -98,8 +116,8 @@ export const rolloutPlanLogic = kea<rolloutPlanLogicType>([
                     )
                     return response.data
                 },
-                deleteRolloutPlan: async () => {
-                    await projectsFeatureFlagsRolloutPlanDestroy(logicProps.teamId, logicProps.flagId)
+                deleteRolloutPlan: async (request: ProjectsFeatureFlagsRolloutPlanDestroyParams) => {
+                    await projectsFeatureFlagsRolloutPlanDestroy(logicProps.teamId, logicProps.flagId, request)
                     return null
                 },
             },

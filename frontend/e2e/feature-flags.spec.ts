@@ -3,13 +3,13 @@ import { expect, test } from '@playwright/test'
 import type {
     FeatureFlag,
     FeatureFlagRequest,
-    RolloutPlanRequest,
+    RolloutPlanMutationRequest,
 } from '../../products/feature_flags/frontend/generated/models'
 
 test('creates a flag, traces its decision, and reverts a health rollout', async ({ page }) => {
     let flags: FeatureFlag[] = []
     let submittedFlag: FeatureFlagRequest | null = null
-    let submittedRolloutPlan: RolloutPlanRequest | null = null
+    let submittedRolloutPlan: RolloutPlanMutationRequest | null = null
 
     await page.route('**/api/projects/1/feature_flags/**', async (route) => {
         const request = route.request()
@@ -28,6 +28,7 @@ test('creates a flag, traces its decision, and reverts a health rollout', async 
                         current_phase_index: 0,
                         phase_entered_at: '2026-10-02T12:00:00Z',
                         hold_reason: submittedRolloutPlan.status === 'REVERTED' ? 'manual_revert' : '',
+                        version: 1,
                         hold_started_at: null,
                         recent_samples: [],
                         created_at: '2026-10-02T12:00:00Z',
@@ -45,7 +46,7 @@ test('creates a flag, traces its decision, and reverts a health rollout', async 
 
         if (pathname.endsWith('/rollout_plan/') && request.method() === 'PUT') {
             const created = submittedRolloutPlan === null
-            submittedRolloutPlan = request.postDataJSON() as RolloutPlanRequest
+            submittedRolloutPlan = request.postDataJSON() as RolloutPlanMutationRequest
             flags = flags.map((flag) => ({ ...flag, rollout_plan_status: submittedRolloutPlan?.status ?? null }))
             await route.fulfill({
                 status: created ? 201 : 200,
@@ -58,6 +59,7 @@ test('creates a flag, traces its decision, and reverts a health rollout', async 
                     phase_entered_at: '2026-10-02T12:00:00Z',
                     hold_reason: submittedRolloutPlan.status === 'REVERTED' ? 'manual_revert' : '',
                     hold_started_at: null,
+                    version: 1,
                     recent_samples: [],
                     created_at: '2026-10-02T12:00:00Z',
                 }),
@@ -172,12 +174,12 @@ test('creates a flag, traces its decision, and reverts a health rollout', async 
     await page.getByRole('button', { name: '← Edit flag' }).click()
     await page.getByRole('button', { name: 'Activate' }).click()
     await expect(page.getByText('ACTIVE', { exact: true })).toBeVisible()
-    const capturedRolloutPlan = submittedRolloutPlan as RolloutPlanRequest | null
+    const capturedRolloutPlan = submittedRolloutPlan as RolloutPlanMutationRequest | null
     expect(capturedRolloutPlan?.managed_group_index).toBe(0)
     expect(capturedRolloutPlan?.phases.map((phase) => phase.percentage)).toEqual([1, 10, 50, 100])
 
     await page.getByRole('button', { name: 'Revert' }).click()
     await expect(page.getByText('REVERTED', { exact: true })).toBeVisible()
-    const revertedRolloutPlan = submittedRolloutPlan as RolloutPlanRequest | null
+    const revertedRolloutPlan = submittedRolloutPlan as RolloutPlanMutationRequest | null
     expect(revertedRolloutPlan?.status).toBe('REVERTED')
 })
