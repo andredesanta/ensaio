@@ -23,6 +23,8 @@ Ensaio uses the v1 PostHog bucketing contract:
 
 Conditions are evaluated in stored list order and the first complete match wins. A later condition with a pinned variant does not move ahead of an earlier matching condition. If no condition matches, `out_of_rollout_bound` outranks `no_condition_match`.
 
+M1 hashes only the caller's `distinct_id`. Group keys, device bucketing, and experience-continuity `hash_key_override` selection are outside this project version contract and are documented in ADR-5 rather than silently approximated.
+
 ## PostHog baseline
 
 - `rust/feature-flags/src/flags/flag_matching_utils.rs`, `calculate_hash`: SHA-1, first 60 bits, and `LONG_SCALE = 0xfffffffffffffff`.
@@ -30,6 +32,7 @@ Conditions are evaluated in stored list order and the first complete match wins.
 - `rust/feature-flags/src/flags/v1_bucketing.rs`, `is_in_rollout`: the 100% shortcut and inclusive `<=` rollout comparison.
 - `rust/feature-flags/src/flags/v1_bucketing.rs`, `select_variant`: strict `<` cumulative variant boundary and unassigned underweight remainder.
 - `rust/feature-flags/src/flags/flag_matching.rs`, `get_hash`: normal prefix `f"{flag.key}."`, empty rollout salt, `"variant"` variant salt, and the `0.0` sentinel for an empty selected identifier.
+- The same file's `hashed_identifier` selects a group key for group aggregation; otherwise a non-empty device id wins when device bucketing is configured, followed by the experience-continuity override chain and finally `distinct_id`. ADR-5 records that identity policy and the narrower Ensaio boundary in detail.
 - The same file's `get_match` enumerates conditions without sorting and returns on the first match. `test_condition_evaluation_order_with_variant_overrides` pins this behavior explicitly.
 - `rust/feature-flags/src/flags/flag_match_reason.rs`, `FeatureFlagMatchReason::score`: `OutOfRolloutBound` has score 3 and `NoConditionMatch` score 2.
 
