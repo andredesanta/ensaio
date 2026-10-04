@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+# Record the mocked end-to-end product story and convert it to a README GIF.
+set -euo pipefail
+cd "$(dirname "$0")/.."
+
+if ! command -v ffmpeg >/dev/null 2>&1; then
+    echo "ffmpeg is required to build docs/assets/ensaio-demo.gif" >&2
+    exit 1
+fi
+
+cleanup() {
+    rm -rf frontend/demo-output
+}
+trap cleanup EXIT
+
+rm -rf frontend/demo-output
+mkdir -p docs/assets
+
+(
+    cd frontend
+    corepack pnpm exec playwright test --config playwright.demo.config.ts
+)
+
+videos=(frontend/demo-output/*/video.webm)
+if [[ ! -f "${videos[0]}" ]]; then
+    echo "Playwright did not produce a demo video." >&2
+    exit 1
+fi
+
+ffmpeg \
+    -loglevel error \
+    -y \
+    -i "${videos[0]}" \
+    -vf "fps=10,scale=960:-1:flags=lanczos,split[original][copy];[original]palettegen=max_colors=128[palette];[copy][palette]paletteuse=dither=bayer" \
+    docs/assets/ensaio-demo.gif
+
+echo "Wrote docs/assets/ensaio-demo.gif"

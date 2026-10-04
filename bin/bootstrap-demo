@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+# Create the local database plus an idempotent demo operator and team.
+set -euo pipefail
+cd "$(dirname "$0")/.."
+
+docker compose up -d
+
+echo "Waiting for Postgres..."
+for _ in $(seq 1 30); do
+    if docker compose exec -T db pg_isready -U ensaio -d ensaio >/dev/null 2>&1; then
+        break
+    fi
+    sleep 1
+done
+docker compose exec -T db pg_isready -U ensaio -d ensaio
+
+uv run python manage.py migrate
+uv run python manage.py shell -c '
+from django.contrib.auth import get_user_model
+from products.feature_flags.backend.models import Team
+
+User = get_user_model()
+user, _ = User.objects.get_or_create(username="admin")
+user.is_staff = True
+user.is_superuser = True
+user.set_password("ensaio")
+user.save()
+Team.objects.get_or_create(pk=1, defaults={"name": "Development"})
+'
+
+echo "Demo data ready."
+echo "Django login: admin / ensaio"
+echo "Team: 1 (Development)"

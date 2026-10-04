@@ -64,7 +64,7 @@ python_version = "3.14"
 strict = true
 plugins = ["mypy_django_plugin.main", "mypy_drf_plugin.main"]
 warn_unused_ignores = true
-files = ["ensaio_project", "products", "packages/ensaio_kernel", "manage.py"]
+files = ["ensaio_project", "products", "packages/ensaio_kernel", "scripts", "manage.py"]
 exclude = ["^\\.venv/"]
 
 [tool.django-stubs]
