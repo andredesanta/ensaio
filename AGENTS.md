@@ -1,6 +1,8 @@
 # Ensaio — agent and contributor notes
 
-Ensaio is a learning project: a small feature-flag platform shaped like PostHog's. It is not affiliated with PostHog or with any employer.
+Ensaio is a learning project: a small feature-flag platform shaped like PostHog's. It is not affiliated with PostHog or with any employer. The public product scope is defined by `README.md`, the accepted ADRs, generated contracts, and tests. If a decision is not documented, take the simplest option consistent with the existing architecture and add one short ADR under `docs/adr/` when the choice is non-obvious.
+
+Human contribution workflow, review expectations, and change-specific command recipes are in `CONTRIBUTING.md`. `docs/architecture-and-production-gaps.md` records which shortcuts are deliberate; update it when a change moves a production boundary or introduces a new learning-project compromise.
 
 ## Stack
 

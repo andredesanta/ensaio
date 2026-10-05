@@ -4,6 +4,14 @@ Ensaio is a small, working feature-flag platform built to understand the archite
 
 This is an original learning project. It is not affiliated with, endorsed by, or copied from PostHog or any employer. The PostHog observations in this repository come only from public source and are labeled as verified or inferred.
 
+Read by goal:
+
+- Understand the system and its production limits: [Architecture and production gap register](docs/architecture-and-production-gaps.md);
+- Inspect the public-source PostHog comparison: [What I learned from PostHog](docs/notes/what-i-learned-from-posthog.md);
+- Make a first contribution: [Contributing guide](CONTRIBUTING.md);
+- Inspect the agent contract: [`services/mcp/schema/tool-catalog.json`](services/mcp/schema/tool-catalog.json) and [`services/mcp/evals/README.md`](services/mcp/evals/README.md); or
+- Browse the public documentation: [Documentation map](docs/README.md).
+
 ## Demo
 
 The reproducible browser journey creates a targeted multivariate flag, inspects its evaluation trace, activates a phased rollout, and reverts it:
@@ -26,6 +34,38 @@ Re-record it from mocked deterministic API responses with `./bin/record-demo`. T
 - Full Python and TypeScript static checks, backend and frontend unit tests, API and MCP generation-drift checks, package boundaries, and a mocked Playwright product smoke test.
 
 Everything above is implemented and covered by the repository's verification commands; the browser smoke and production build run separately from `./bin/test` and also run in CI. The limitations section is equally important: this is not a production PostHog replacement.
+
+## PostHog and Ensaio: same ideas, different goals
+
+The comparison baseline is PostHog's public repository at commit [`40eeb716`](https://github.com/PostHog/posthog/tree/40eeb716559d19325eb82b381663dd07ba9c8020). “PostHog” below means the public code examined at that revision, not a claim about private systems or every current product capability.
+
+| Concern | Public PostHog implementation | Ensaio implementation |
+| --- | --- | --- |
+| Product scope | A production product with broad flag targeting, identity, groups, cohorts, experiments, analytics, billing, and operational infrastructure | One teachable vertical slice: flags, trace, definitions, a small rollout controller, and an agent control plane |
+| Management and evaluation | Django owns management; a separate Rust service serves runtime evaluation and definitions | Django owns management and the live endpoint; a zero-I/O Python package holds evaluation policy and can also run beside a definitions consumer |
+| Definition propagation | Cache-building machinery, versioned invalidations, Redis/S3-backed HyperCache, background processing, and repair paths | PostgreSQL plus process-local cache, post-commit invalidation, and consumer polling with ETags |
+| Identity | Person/group identity selection, device bucketing, and experience-continuity behavior | The caller supplies one `distinct_id` and properties; there is no identity or person store |
+| Flag matching | A much broader production matcher and response contract | A deliberately narrow property-operator subset with compatible v1 hashing/bucketing once an identifier is selected |
+| Frontend | A large product application and design system | React/Kea list, edit, and trace scenes in a product-owned vertical slice |
+| Tenancy and auth | Production organization/project membership and authorization surfaces | Team-scoped query practice; staff users can operate every team; automation credentials are project- and scope-bound |
+| Rollout operations | Scheduled flag changes and experiment-analysis capabilities exist in the examined public code | One sample-driven absolute-threshold controller owns one condition percentage and holds when evidence is missing |
+| Agent interface | Product-owned MCP curation, generated tools, workflow skills, and production service infrastructure | The same product-owned/generation shape in an independent local stdio service with twelve bounded tools |
+| Operations | Horizontally operated services, cache tiers, workers, observability, and abuse controls | Local processes, one PostgreSQL container, no queue/worker fleet, no rate limiting, and no production deployment claim |
+
+The point is not to reproduce PostHog at miniature scale. Ensaio keeps the parts that expose useful engineering decisions and removes machinery whose main lesson would be operations at traffic this project does not have.
+
+### Where Ensaio deliberately explores further
+
+These are Ensaio-specific experiments, not claims that Ensaio is broader or better than PostHog:
+
+- **A mechanically pure evaluation boundary.** The Python kernel is a separate zero-runtime-dependency package, and `tach check-external` prevents framework or I/O dependencies. PostHog achieves a stronger deployment-scale separation with its Rust service; Ensaio makes the policy boundary unusually visible for teaching and local reuse.
+- **A health-gated rollout primitive.** In the public areas examined, PostHog had scheduled changes and experiment analysis, but this exact controller was not found: advance one condition from caller-pushed absolute-threshold samples, treat no evidence as unsafe, and revert only that condition. This is an original, deliberately small design experiment, not a parity claim.
+- **Agent-safe concurrency as a first-class lesson.** Every agent-visible flag or rollout mutation carries an observed version. Rollout-plan concurrency combines immutable plan ID with mutable version to reject delete/recreate ABA races. Dedicated actions avoid exposing generic request, SQL, delete, or project-switch capabilities.
+- **End-to-end generated and validated agent contracts.** Product YAML curates a strict subset of OpenAPI; generation produces handlers and JSON Schemas; the MCP runtime validates model input and projected output. Controlled absence codes are checked against OpenAPI rather than accepted as arbitrary strings.
+- **A reproducible agent-evaluation harness beside the product.** Deterministic probes and protocol tests run without model credentials; real model runs are explicit, redacted, schema/retry/latency scored, and fail closed rather than manufacturing a baseline.
+- **A complete learning trail.** ADRs record non-obvious choices, milestone guides reconstruct the work chronologically, and the [Production gap register](docs/architecture-and-production-gaps.md) names exactly where the implementation stops being a production design.
+
+The path-cited evidence and the limits of each comparison are in [`docs/notes/what-i-learned-from-posthog.md`](docs/notes/what-i-learned-from-posthog.md) and ADRs 1–6.
 
 ## 60-second local quickstart
 
@@ -64,6 +104,8 @@ Useful endpoints:
 - evaluation API: `POST http://127.0.0.1:8000/flags/?v=2`;
 - definitions API: `GET http://127.0.0.1:8000/flags/definitions`;
 - OpenAPI schema: <http://127.0.0.1:8000/api/schema/>.
+
+The [Evaluation contract](#evaluation-contract), [architecture register](docs/architecture-and-production-gaps.md), OpenAPI schema, and ADRs document the behavior behind these endpoints.
 
 ## 60-second local MCP setup
 
@@ -138,6 +180,8 @@ The main boundary is intentional:
 - `services/mcp/` is a separate HTTP client package: it imports no Django, backend, kernel, or database code.
 
 [`tach.toml`](tach.toml), Ruff's forbidden-import rules, and `tach check-external` make the Python boundary executable rather than aspirational.
+
+For request-by-request flows, code ownership, retained production habits, and a decision-by-decision account of what would need to change at scale, read the [Architecture and production gap register](docs/architecture-and-production-gaps.md).
 
 ## Evaluation contract
 
@@ -218,6 +262,8 @@ The complete source study is [What I learned from PostHog](docs/notes/what-i-lea
 
 ## Security, scope, and non-goals
 
+The concise list below is backed by the code-level [Architecture and production gap register](docs/architecture-and-production-gaps.md), which records why each simplification works for this project, how it fails at scale, and the likely production direction.
+
 - The console treats every Django staff user as an operator for every team. There is no organization membership model or production RBAC.
 - Automation tokens are project-scoped and have read/write scopes, but M7 does not add organization RBAC, token-management UI, OAuth, rate limiting, or a hosted MCP transport.
 - `POST /flags` looks up a raw public project token. Definitions use a secret token whose password hash is stored, but lookup scans teams in this small project.
@@ -227,6 +273,19 @@ The complete source study is [What I learned from PostHog](docs/notes/what-i-lea
 - The rollout controller accepts caller-supplied samples and an absolute threshold. It does not establish causality, compare treatment/control populations, or schedule itself.
 - MCP exposes no delete, scheduler, SQL, arbitrary-request, or project-switch tool. Stdio is local-only. Agent traces and benchmarks are development evidence, not production reliability claims.
 - Development defaults, bootstrap credentials, CORS policy, and `ALLOWED_HOSTS` are local-only. A real deployment needs a security and operations design.
+
+## Contributing
+
+Contributions are welcome, including from people new to this stack. Start with [`CONTRIBUTING.md`](CONTRIBUTING.md), which provides:
+
+- A first-contribution path and issue workflow;
+- Exact setup and verification commands;
+- A map from change type to files, generation steps, and tests;
+- Architecture, security, generated-file, and AI-assistance rules;
+- Pull-request and review expectations; and
+- Guidance for proposing durable architectural decisions.
+
+Repository issue forms distinguish bugs, documentation gaps, and design proposals. The pull-request template asks for the problem, verification, and architectural/scale impact so important decisions are visible during review.
 
 ## Architecture decisions
 
@@ -238,3 +297,13 @@ The complete source study is [What I learned from PostHog](docs/notes/what-i-lea
 6. [ADR-6 — Agent control plane over the management API](docs/adr/0006-agent-control-plane.md)
 
 Contributor and agent constraints are in [`AGENTS.md`](AGENTS.md).
+
+## Project documentation
+
+- [Documentation map](docs/README.md)
+- [Architecture and production gap register](docs/architecture-and-production-gaps.md)
+- [What I learned from PostHog](docs/notes/what-i-learned-from-posthog.md)
+- [Agent eval guide](services/mcp/evals/README.md)
+- [Contributing guide](CONTRIBUTING.md)
+
+The README, architecture register, ADRs, generated API/MCP contracts, and tests define the public project scope. Contributor and agent constraints are in [`CONTRIBUTING.md`](CONTRIBUTING.md) and [`AGENTS.md`](AGENTS.md).

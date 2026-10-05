@@ -1,0 +1,60 @@
+name: Change proposal
+description: Discuss a feature, architecture change, or substantial refactor before implementation.
+title: "[Proposal]: "
+body:
+    - type: markdown
+      attributes:
+          value: |
+              Ensaio has intentionally bounded scope. Explain the learning or user problem before proposing infrastructure.
+              Small fixes with an established contract can use the bug report instead.
+    - type: textarea
+      id: problem
+      attributes:
+          label: Problem
+          description: Who encounters this problem, and what can they not do or understand today?
+      validations:
+          required: true
+    - type: textarea
+      id: evidence
+      attributes:
+          label: Evidence
+          description: Link relevant code, tests, design sections, ADRs, measurements, or public-source evidence.
+      validations:
+          required: true
+    - type: textarea
+      id: scope
+      attributes:
+          label: Proposed scope
+          description: Describe the smallest coherent change and its explicit non-goals.
+      validations:
+          required: true
+    - type: textarea
+      id: alternatives
+      attributes:
+          label: Alternatives considered
+          description: Include doing nothing or improving documentation when applicable.
+      validations:
+          required: true
+    - type: textarea
+      id: boundaries
+      attributes:
+          label: Architecture and production trade-offs
+          description: Which package boundaries, contracts, security properties, or production-gap entries change?
+      validations:
+          required: true
+    - type: textarea
+      id: verification
+      attributes:
+          label: Verification plan
+          description: What is the cheapest test or measurement that proves the change?
+      validations:
+          required: true
+    - type: checkboxes
+      id: scope-check
+      attributes:
+          label: Scope check
+          options:
+              - label: I read CONTRIBUTING.md and the architecture and production gap register.
+                required: true
+              - label: I have not started a large implementation before discussing this proposal.
+                required: true

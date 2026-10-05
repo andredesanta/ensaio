@@ -1,0 +1,75 @@
+name: Bug report
+description: Report reproducible behavior that differs from Ensaio's documented contract.
+title: "[Bug]: "
+body:
+    - type: markdown
+      attributes:
+          value: |
+              Thank you for helping improve Ensaio. Search existing issues first and use synthetic data only.
+              Report security-sensitive behavior privately according to SECURITY.md.
+    - type: checkboxes
+      id: safety
+      attributes:
+          label: Safety check
+          options:
+              - label: This report contains no credentials, cookies, provider keys, distinct IDs, or person data.
+                required: true
+              - label: This is not a privately reportable security vulnerability.
+                required: true
+    - type: dropdown
+      id: area
+      attributes:
+          label: Area
+          options:
+              - Evaluation kernel
+              - Django API or persistence
+              - React/Kea console
+              - Definitions or local evaluation
+              - Rollout controller
+              - MCP or agent evals
+              - Tooling, CI, or documentation
+              - Unsure
+      validations:
+          required: true
+    - type: textarea
+      id: reproduction
+      attributes:
+          label: Smallest reproduction
+          description: Include exact commands, requests, synthetic fixtures, and the revision tested.
+          placeholder: |
+              1. Start from revision ...
+              2. Run ...
+              3. Send ...
+      validations:
+          required: true
+    - type: textarea
+      id: expected
+      attributes:
+          label: Expected behavior
+          description: Link the README, ADR, API contract, or test that establishes the expectation when possible.
+      validations:
+          required: true
+    - type: textarea
+      id: actual
+      attributes:
+          label: Actual behavior
+          description: Include complete redacted errors or logs.
+      validations:
+          required: true
+    - type: textarea
+      id: environment
+      attributes:
+          label: Environment
+          placeholder: |
+              OS:
+              uv run python --version:
+              node --version:
+              docker --version:
+              git rev-parse HEAD:
+      validations:
+          required: true
+    - type: textarea
+      id: notes
+      attributes:
+          label: Additional context
+          description: State whether the issue is deterministic. Label any root-cause hypothesis as a hypothesis.

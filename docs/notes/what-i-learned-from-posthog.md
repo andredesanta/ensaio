@@ -41,3 +41,14 @@ PostHog already has substantial adjacent functionality. Public [`products/featur
 Within those named areas and the feature-flags product at the checked commit, I did not find Ensaio's exact M5 primitive: advance one release-condition percentage from caller-pushed absolute-threshold samples, hold when qualifying samples are missing, pause after a maximum hold, and revert that percentage on a breach. This is a statement about my scoped search, not a claim that PostHog has no guardrails, workflows, or rollout automation.
 
 The design lesson was still useful. “No data” must not silently mean “healthy,” and a controller should mutate only the part of a flag that it owns. Ensaio's pure decision function therefore holds or pauses on insufficient evidence and reverts only its managed condition. ADR-4 records the precise difference.
+
+## 6. Similar shape does not mean similar operating model
+
+The public-source study influenced Ensaio's vertical layout, generated contracts, Kea state, deterministic bucketing, definitions endpoint, and product-owned MCP curation. It did not justify copying PostHog's production
+topology into a local project.
+
+PostHog's separate Rust evaluation service, cache builders, Redis/S3 tiers, background processing, identity model, and repair machinery solve traffic, availability, and product requirements Ensaio does not have. Ensaio instead uses a pure Python package, Django/PostgreSQL live evaluation, process-local cache, polling, caller-supplied identity, and a manually invoked rollout command. Those are deliberate teaching boundaries, not smaller equivalents of the production systems.
+
+Ensaio also contains original experiments that should not be described as PostHog parity: its absolute-threshold health-gated rollout controller, strict optimistic concurrency on every agent-visible mutation, and the particular deterministic/model eval harness around its twelve-tool local MCP surface.
+
+The README provides a side-by-side comparison. The [architecture and production gap register](../architecture-and-production-gaps.md) maps every major shortcut to its code, scale limit, and plausible production direction.

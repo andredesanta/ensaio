@@ -1,0 +1,44 @@
+name: Documentation improvement
+description: Report a missing, incorrect, confusing, or unreproducible explanation.
+title: "[Docs]: "
+body:
+    - type: dropdown
+      id: kind
+      attributes:
+          label: What needs improvement?
+          options:
+              - A command or reproduction path is wrong
+              - An explanation is unclear
+              - Architecture or trade-offs are missing
+              - A link or file reference is broken
+              - Contributor guidance is missing
+              - Public-source evidence or claim needs correction
+              - Other
+      validations:
+          required: true
+    - type: textarea
+      id: location
+      attributes:
+          label: Location
+          description: Link the file, heading, or lines.
+      validations:
+          required: true
+    - type: textarea
+      id: issue
+      attributes:
+          label: What is confusing or incorrect?
+          description: Include what you tried and the exact failure for commands.
+      validations:
+          required: true
+    - type: textarea
+      id: suggestion
+      attributes:
+          label: Suggested improvement
+          description: A proposed wording is welcome but not required.
+    - type: checkboxes
+      id: safety
+      attributes:
+          label: Safety check
+          options:
+              - label: Any included output is synthetic and contains no credentials or person data.
+                required: true
